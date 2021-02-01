@@ -1,0 +1,13 @@
+[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/main.scala:71:13: not found: value mouseclicked[0m
+[0m[[0m[31merror[0m] [0m[0m        if (mouseclicked) {[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/main.scala:72:22: not found: value mouseX[0m
+[0m[[0m[31merror[0m] [0m[0m          g.fillOval(mouseX - 10, mouseY - 10, 20, 20)[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/main.scala:72:35: not found: value mouseY[0m
+[0m[[0m[31merror[0m] [0m[0m          g.fillOval(mouseX - 10, mouseY - 10, 20, 20)[0m
+[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/main.scala:73:11: not found: value mouseclicked[0m
+[0m[[0m[31merror[0m] [0m[0m          mouseclicked = false[0m
+[0m[[0m[31merror[0m] [0m[0m          ^[0m
+[0m[[0m[31merror[0m] [0m[0mfour errors found[0m

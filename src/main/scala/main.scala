@@ -51,9 +51,7 @@ object My_app extends SimpleSwingApplication
             case _ => 
               val game_width = launch_width_field.text.toInt
               val game_height = game_width/16*9
-              game_box.preferredSize = new Dimension(game_width, game_height)
-              game_box.minimumSize = new Dimension(game_width, game_height)
-              game_box.maximumSize = new Dimension(game_width, game_height)
+              game_box.border = Swing.EmptyBorder(game_height, game_width, 0, 0) 
               main_frame.contents = game_box
               main_frame.title = "Enter the crapgeon!"
           }
@@ -62,17 +60,13 @@ object My_app extends SimpleSwingApplication
     contents = launcher_box
     /********* MainGame ***************************************/
     /**********************************************************/
-    val game_box = new Panel {
-      background = java.awt.Color.black
-
-      override def paintComponent(g: java.awt.Graphics2D) {
-        super.paintComponent(g);
-        g.setColor(java.awt.Color.blue)
-        if (mouseclicked) {
-          g.fillOval(mouseX - 10, mouseY - 10, 20, 20)
-          mouseclicked = false
-        }
-      }
+    val canvas = new Label{
+      foreground = java.awt.Color.black
+    }
+    val game_box = new BoxPanel(Orientation.Vertical) {
+      launcher_box =>
+        border = Swing.EmptyBorder(0,0,0,0) 
+        contents += canvas
     }
   }
 }

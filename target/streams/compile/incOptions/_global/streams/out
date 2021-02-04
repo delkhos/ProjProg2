@@ -1,19 +1,9 @@
 [0m[[0m[0mdebug[0m] [0m[0mCreated transactional ClassFileManager with tempDir = /home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/target/scala-2.12/classes.bak[0m
 [0m[[0m[0mdebug[0m] [0m[0mAbout to delete class files:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$7.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$6.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$4.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$2.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$7$$anonfun$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$9.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$7$$anon$8.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$5.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$3.class[0m
 [0m[[0m[0mdebug[0m] [0m[0mWe backup class files:[0m
+[0m[[0m[0mdebug[0m] [0m[0mRegistering generated classes:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	My_app$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$10.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$7.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$6.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$4.class[0m
@@ -25,19 +15,4 @@
 [0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$7$$anon$8.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$5.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$3.class[0m
-[0m[[0m[0mdebug[0m] [0m[0mRolling back changes to class files.[0m
-[0m[[0m[0mdebug[0m] [0m[0mRemoving generated classes:[0m
-[0m[[0m[0mdebug[0m] [0m[0mRestoring class files: [0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$7$$anonfun$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$3.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$5.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$7$$anon$8.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$7.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$4.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$2.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$9.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	My_app$$anon$1$$anon$6.class[0m
 [0m[[0m[0mdebug[0m] [0m[0mRemoving the temporary directory used for backing up class files: /home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/target/scala-2.12/classes.bak[0m

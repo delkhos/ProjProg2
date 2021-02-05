@@ -20,6 +20,8 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
 
   this.preferredSize = new Dimension(width, height)
 
+  val slime = new Environment(40, 23, new Sprite( Array[SubSprite](new SubSprite(9,"000000255"), new SubSprite(47, "255255255")) , Color.BLACK), true)
+
   def paintCharacter(g: Graphics2D,c: Int, px: Int, py: Int, bg: Color, fg: String){
     val x:Int = c % 16 
     val y:Int = c / 16 
@@ -46,6 +48,7 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
     g.fillRect(0,0, width, height)
 
     if (tileset_handler.isReady()){
+      /*
       val r = scala.util.Random
       for(i <- 1 to 80 ){
         for(j <- 1 to 45 ){
@@ -56,6 +59,16 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
           paintCharacter(g, c , i, j,Color.BLACK, red+green+blue)
         }
       }
+      */
+      //draw ui 
+      for( j <- 1 to 40 ){
+        paintCharacter(g, 249, 70, j, Color.BLACK, "255255255")
+      }
+      for( j <- 1 to 70 ){
+        paintCharacter(g, 249, j, 40, Color.BLACK, "255255255")
+      }
+
+      slime.draw(g, width, height, matrix_width, matrix_height, tileset_handler) 
     }else{
       println("Couldn't load tileset, exiting.\n")
       this.main_frame.dispose()
@@ -92,6 +105,18 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
         this.main_frame.pack()
         this.repaint()
         println("Current resolution : width="+this.width+" height="+this.height+"\n")
+      }else if(k == Key.Up){
+        slime.setY(slime.getY()-1)
+        this.repaint()
+      }else if(k == Key.Down){
+        slime.setY(slime.getY()+1)
+        this.repaint()
+      }else if(k == Key.Left){
+        slime.setX(slime.getX()-1)
+        this.repaint()
+      }else if(k == Key.Right){
+        slime.setX(slime.getX()+1)
+        this.repaint()
       }else{
         println(k+"  "+ k + "\n")
       }

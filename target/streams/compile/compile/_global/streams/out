@@ -1,0 +1,7 @@
+[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/entity.scala:13:6: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m    x=nx[0m
+[0m[[0m[31merror[0m] [0m[0m     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/entity.scala:16:6: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m    y=ny [0m
+[0m[[0m[31merror[0m] [0m[0m     ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

@@ -1,3 +1,5 @@
+package rogue
+
 import swing._
 import swing.event._
 import java.awt.{Color,Graphics2D,BasicStroke, Graphics}
@@ -124,24 +126,37 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
     val sy1 = (py-1)*size
     val sx2 = sx1 + (size-1)
     val sy2 = sy1 + (size-1)
-    g.drawImage(getColoredTileset(fg), sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2, bg , null)
+    g.setColor(bg);
+    g.fillRect(sx1,sy1, tileset_size, tileset_size)
+    g.drawImage(getColoredTileset(fg), sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2, null)
+  }
+  def paintCharacter(g: Graphics2D,c: Int, px: Int, py: Int, fg: String){
+    val x = c % 16 
+    val y = c / 16 
+    val dx1 = x*tileset_size 
+    val dy1 = y*tileset_size
+    val dx2 = dx1+(tileset_size-1)
+    val dy2 = dy1+(tileset_size-1)
+    val size = width/matrix_width
+    val sx1 = (px-1)*size
+    val sy1 = (py-1)*size
+    val sx2 = sx1 + (size-1)
+    val sy2 = sy1 + (size-1)
+    g.drawImage(getColoredTileset(fg), sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2, null)
   }
   
   override def paintComponent(g : Graphics2D) {
-    /*
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_OFF)
     g.setRenderingHint(java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION, java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED)
     g.setRenderingHint(java.awt.RenderingHints.KEY_COLOR_RENDERING, java.awt.RenderingHints.VALUE_COLOR_RENDER_SPEED)
-    */
+
     g.setColor(Color.BLACK);
     g.fillRect(0,0, width, height)
-
-    // va falloir trouver un moyen de ne repaint que ce qui nous intéresse
 
     if (null != tilesetWhite){
       for(i <- 1 to 80 ){
         for(j <- 1 to 45 ){
-          paintCharacter(g, (i*17+j*31)%256, i, j, Color.BLACK, game_colors(current_color))
+          paintCharacter(g, (i*17+j*31)%256, i, j,Color.MAGENTA, game_colors(current_color))
         }
       }
     }

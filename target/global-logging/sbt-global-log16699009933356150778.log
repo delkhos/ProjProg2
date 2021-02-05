@@ -1,6 +1,6 @@
-[0m[[0m[0mdebug[0m] [0m[0m> Exec(run, Some(09a1738a-9a63-4e2a-865c-20c5841a293e), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(run, Some(e6c1a2d3-a0f9-4e3f-a1a8-483bd28e69c4), Some(CommandSource(console0)))[0m
 [0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Compile / run[0m
 [0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
 [0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to /home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/target/scala-2.12/classes ...[0m
-[0m[[0m[32msuccess[0m] [0m[0mTotal time: 48 s, completed Feb 5, 2021, 11:20:06 AM[0m
+[0m[[0m[32msuccess[0m] [0m[0mTotal time: 17 s, completed Feb 5, 2021, 11:40:54 AM[0m
 [0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m

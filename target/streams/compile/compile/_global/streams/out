@@ -1,4 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/main.scala:62:31: not found: type string[0m
-[0m[[0m[31merror[0m] [0m[0m  def getColoredTileset(color:string):BufferedImage = {[0m
-[0m[[0m[31merror[0m] [0m[0m                              ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m

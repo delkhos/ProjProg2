@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/main.scala:87:18: not found: value toCompatibleImage[0m
+[0m[[0m[31merror[0m] [0m[0m  tilesetWhite = toCompatibleImage(tilesetWhite)[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

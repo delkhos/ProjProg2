@@ -5,9 +5,12 @@ import java.awt.geom._
 import java.awt.image.BufferedImage                                           
 import java.io.File                                                           
 import javax.imageio.ImageIO
+import java.awt.GraphicsEnvironment
 
 
 object ColorChanger {
+
+  val GFX_CONFIG = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration()
 
   def copyImage(source: BufferedImage): BufferedImage = {
     val b:BufferedImage = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
@@ -39,6 +42,27 @@ object ColorChanger {
 
     return newImage
   }
+  def toCompatibleImage(image: BufferedImage): BufferedImage =  {
+    /*
+     * if image is already compatible and optimized for current system settings, simply return it
+     */
+    if (image.getColorModel().equals(GFX_CONFIG.getColorModel())) {
+        return image;
+    }
+
+    // image is not optimized, so create a new image that is
+    val new_image: BufferedImage = GFX_CONFIG.createCompatibleImage(image.getWidth(), image.getHeight(), image.getTransparency());
+
+    // get the graphics context of the new image to draw the old image on
+    val g2d = new_image.getGraphics();
+
+    // actually draw the image and dispose of context no longer needed
+    g2d.drawImage(image, 0, 0, null);
+    g2d.dispose();
+
+    // return the new optimized image
+    return new_image;
+}
 }
 
 class GamePanel(main_frame: MainFrame ) extends Panel {
@@ -57,13 +81,16 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
 
   this.preferredSize = new Dimension(width, height)
 
+  // GENRATING OUR TILESETS
   private var tilesetWhite:BufferedImage = null 
   tilesetWhite = ImageIO.read(new File("src/main/resources/3_16.png"))
+  tilesetWhite = ColorChanger.toCompatibleImage(tilesetWhite)
   val tileSets = scala.collection.mutable.Map[String,BufferedImage]()
   tileSets("255255255") = tilesetWhite
   for( i <- 1 to  (game_colors.size-1)){
     getColoredTileset(game_colors(i)) 
   }
+  // DONE
 
   def toInt(s: String): Int = {
     try {
@@ -101,10 +128,11 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   }
   
   override def paintComponent(g : Graphics2D) {
+    /*
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_OFF)
     g.setRenderingHint(java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION, java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED)
     g.setRenderingHint(java.awt.RenderingHints.KEY_COLOR_RENDERING, java.awt.RenderingHints.VALUE_COLOR_RENDER_SPEED)
-    
+    */
     g.setColor(Color.BLACK);
     g.fillRect(0,0, width, height)
 

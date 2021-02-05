@@ -1,0 +1,11 @@
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(run, Some(24baa49b-c472-4f5c-8385-bbbdae9cd9d3), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Compile / run[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to /home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/target/scala-2.12/classes ...[0m
+[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/main.scala:87:18: not found: value toCompatibleImage[0m
+[0m[[0m[31merror[0m] [0m[0m  tilesetWhite = toCompatibleImage(tilesetWhite)[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mcompileIncremental[0m) Compilation failed[0m
+[0m[[0m[31merror[0m] [0m[0mTotal time: 0 s, completed Feb 5, 2021, 11:19:03 AM[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m

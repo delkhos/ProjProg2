@@ -21,20 +21,20 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   this.preferredSize = new Dimension(width, height)
 
   def paintCharacter(g: Graphics2D,c: Int, px: Int, py: Int, bg: Color, fg: String){
-    val x = c % 16 
-    val y = c / 16 
-    val dx1 = x*tileset_handler.getSize() 
-    val dy1 = y*tileset_handler.getSize()
-    val dx2 = dx1+(tileset_handler.getSize()-1)
-    val dy2 = dy1+(tileset_handler.getSize()-1)
-    val size = width/matrix_width
-    val sx1 = (px-1)*size
-    val sy1 = (py-1)*size
-    val sx2 = sx1 + (size-1)
-    val sy2 = sy1 + (size-1)
+    val x:Int = c % 16 
+    val y:Int = c / 16 
+    val dx1:Int = x*tileset_handler.getSize() 
+    val dy1:Int = y*tileset_handler.getSize()
+    val dx2:Int = dx1+(tileset_handler.getSize()-1)
+    val dy2:Int = dy1+(tileset_handler.getSize()-1)
+    val size:Float = width.toFloat/matrix_width.toFloat
+    val sx1:Float = (px-1)*size
+    val sy1:Float = (py-1)*size
+    val sx2:Float = sx1 + (size-1)
+    val sy2:Float = sy1 + (size-1)
     g.setColor(bg);
-    g.fillRect(sx1,sy1, tileset_handler.getSize(), tileset_handler.getSize())
-    g.drawImage(tileset_handler.getColoredTileset(fg), sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2, null)
+    g.fillRect(sx1.toInt,sy1.toInt, tileset_handler.getSize(), tileset_handler.getSize())
+    g.drawImage(tileset_handler.getColoredTileset(fg), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
   }
   
   override def paintComponent(g : Graphics2D) {
@@ -72,27 +72,31 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   this.reactions += {
     case KeyPressed(_,k,_,_) => 
       if(k == Key.P){
-        this.width += 1
+        this.width += 10
         this.height = this.width*9/16
         this.preferredSize = new Dimension(this.width, this.height)
         this.main_frame.pack()
         this.repaint()
-        println("on grandit")
+        println("Current resolution : width="+this.width+" height="+this.height+"\n")
       }else if(k == Key.M){
-        this.width -= 1
+        this.width -= 10
         this.height = this.width*9/16
         this.preferredSize = new Dimension(this.width, this.height)
         this.main_frame.pack()
         this.repaint()
-        println("on grandit")
+        println("Current resolution : width="+this.width+" height="+this.height+"\n")
+      }else if(k == Key.Asterisk){
+        this.width = 1280
+        this.height = 720
+        this.preferredSize = new Dimension(this.width, this.height)
+        this.main_frame.pack()
+        this.repaint()
+        println("Current resolution : width="+this.width+" height="+this.height+"\n")
       }else{
         println(k+"  "+ k + "\n")
       }
-    case KeyTyped(_,k,_,_) => 
-      this.repaint()
-      println("map size : " + tileset_handler.getMapSize)
     case MouseClicked(_,_,_,_,_) => 
       this.repaint()
-      println("map size : " + tileset_handler.getMapSize)
+      //println("map size : " + tileset_handler.getMapSize)
   }
 }

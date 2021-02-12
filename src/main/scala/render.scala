@@ -55,6 +55,7 @@ class Renderer {
       for(x: Int <- 0 to (floor.getWidth()-1) ){
         for(y: Int <- 0 to (floor.getHeight()-1) ){
           if(floor_grid(x)(y)==1){
+            /*
             val l = if(x==0) false else floor_grid(x-1)(y) == 1
             val r = if(x==(floor.getWidth()-1)) false else floor_grid(x+1)(y) == 1
             val u = if(y==0) false else floor_grid(x)(y-1) == 1
@@ -94,7 +95,8 @@ class Renderer {
             }else{
               paintCharacter(g, 178, x, y, Color.BLACK, "230230230", wwidth, width)
             }
-            
+            */
+            paintCharacter(g, 0, x, y, new Color(60,60,60), "120120120", wwidth, width)
           }else{
             paintCharacter(g, 250, x, y, Color.BLACK, "120120120", wwidth, width)
           }

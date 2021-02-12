@@ -11,11 +11,12 @@ class TileSetHandler(size: Int,path: String ) {
   val GFX_CONFIG = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration()
 
   private var tilesetWhite:BufferedImage = null 
-  tilesetWhite = loadTileSet(path)
-  tilesetWhite = toCompatibleImage(tilesetWhite)
   private val tileSets = scala.collection.mutable.Map[String,BufferedImage]()
-  tileSets("255255255") = tilesetWhite
-
+  tilesetWhite = loadTileSet(path)
+  if(tilesetWhite!=null){
+    tilesetWhite = toCompatibleImage(tilesetWhite)
+    tileSets("255255255") = tilesetWhite
+  }
   def copyImage(source: BufferedImage): BufferedImage = {
     val b:BufferedImage = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
     val g:Graphics = b.getGraphics();
@@ -25,8 +26,13 @@ class TileSetHandler(size: Int,path: String ) {
   }
 
   def loadTileSet(p: String): BufferedImage = {
-    val img = ImageIO.read(new File(p))
-    return img
+    try {
+      val img = ImageIO.read(new File(p))
+      return img
+    }catch{
+      case _: Throwable => 
+        return null
+    }
   }
   def changeColor(original: BufferedImage, oldRed: Int, oldGreen: Int , oldBlue: Int, newRed: Int, newGreen: Int , newBlue: Int): BufferedImage = {
     val RGB_MASK:Int = 0x00FFFFFF

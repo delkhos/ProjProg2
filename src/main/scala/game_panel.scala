@@ -10,87 +10,31 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   var width = 1280
   var height = 720
 
-  val matrix_width = 80
-  val matrix_height = 45
+  val matrix_width = 80//96 //80
+  val matrix_height = 45//54 //45
+
+  val ui_width = 9//25//9
+  val ui_height = 4//13//4
 
   var px = 1
   var py = 1
 
-  val r = scala.util.Random
+  val renderer = new Renderer()
 
-  val tileset_handler = new TileSetHandler(16, "src/main/resources/3_16.png")
+  if(!renderer.initIsOk()){
+    println("Couldn't load tileset, exiting!!.\n")
+    System.exit(1)
+  }
 
   this.preferredSize = new Dimension(width, height)
 
   val slime = new Environment(40, 23, new Sprite( Array[SubSprite](new SubSprite(234,"153051153")) , Color.BLACK), true)
 
-  var first_floor = new MapAutomata(70,40)
-
-  def paintCharacter(g: Graphics2D,c: Int, px: Int, py: Int, bg: Color, fg: String){
-    val x:Int = c % 16 
-    val y:Int = c / 16 
-    val dx1:Int = x*tileset_handler.getSize() 
-    val dy1:Int = y*tileset_handler.getSize()
-    val dx2:Int = dx1+(tileset_handler.getSize()-1)
-    val dy2:Int = dy1+(tileset_handler.getSize()-1)
-    val size:Float = width.toFloat/matrix_width.toFloat
-    val sx1:Float = (px-1)*size
-    val sy1:Float = (py-1)*size
-    val sx2:Float = sx1 + (size-1)
-    val sy2:Float = sy1 + (size-1)
-    g.setColor(bg);
-    g.fillRect(sx1.toInt,sy1.toInt, tileset_handler.getSize(), tileset_handler.getSize())
-    g.drawImage(tileset_handler.getColoredTileset(fg), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
-  }
+  var first_floor = new MapAutomata(matrix_width-ui_width-1,matrix_height-ui_height-1)
   
   override def paintComponent(g : Graphics2D) {
-    g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_OFF)
-    g.setRenderingHint(java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION, java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED)
-    g.setRenderingHint(java.awt.RenderingHints.KEY_COLOR_RENDERING, java.awt.RenderingHints.VALUE_COLOR_RENDER_SPEED)
-
-    g.setColor(Color.BLACK);
-    g.fillRect(0,0, width, height)
-
-    if (tileset_handler.isReady()){
-      /*
-      val r = scala.util.Random
-      for(i <- 1 to 80 ){
-        for(j <- 1 to 45 ){
-          val c = r.nextInt(256)
-          val red = "%03d".format(r.nextInt(11) * 25)
-          val green = "%03d".format(r.nextInt(11) * 25)
-          val blue = "%03d".format(r.nextInt(11) *25)
-          paintCharacter(g, c , i, j,Color.BLACK, red+green+blue)
-        }
-      }
-      */
-      //draw map 
-      val floor = first_floor.getFloor()
-      val floor2 = first_floor.getFloor2()
-      for(x: Int <- 0 to (first_floor.getWidth()-1) ){
-        for(y: Int <- 0 to (first_floor.getHeight()-1) ){
-          if(floor(x)(y)==1){
-            paintCharacter(g, 176, x+1, y+1, Color.BLACK, "230230230")
-          }else{
-            paintCharacter(g, 250, x+1, y+1, Color.BLACK, "120120120")
-          }
-        }
-      }
-      //draw ui 
-      for( j <- 1 to 40 ){
-        paintCharacter(g, 179, 71, j, Color.BLACK, "255255255")
-      }
-      for( j <- 1 to 70 ){
-        paintCharacter(g, 196, j, 41, Color.BLACK, "255255255")
-      }
-
-      //slime.draw(g, width, height, matrix_width, matrix_height, tileset_handler) 
-    }else{
-      println("Couldn't load tileset, exiting.\n")
-      this.main_frame.dispose()
-    }
-  }
-
+    renderer.drawGame(g, width, height, matrix_width, matrix_height, ui_width, ui_height, first_floor)
+  } 
   // LISTENING TO MOUSE AND KEYBOARD
   focusable = true
   listenTo(mouse.clicks)

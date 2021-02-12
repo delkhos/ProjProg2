@@ -16,11 +16,15 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   var px = 1
   var py = 1
 
+  val r = scala.util.Random
+
   val tileset_handler = new TileSetHandler(16, "src/main/resources/3_16.png")
 
   this.preferredSize = new Dimension(width, height)
 
-  val slime = new Environment(40, 23, new Sprite( Array[SubSprite](new SubSprite(9,"000000255"), new SubSprite(47, "255255255")) , Color.BLACK), true)
+  val slime = new Environment(40, 23, new Sprite( Array[SubSprite](new SubSprite(234,"153051153")) , Color.BLACK), true)
+
+  var first_floor = new MapAutomata(70,40)
 
   def paintCharacter(g: Graphics2D,c: Int, px: Int, py: Int, bg: Color, fg: String){
     val x:Int = c % 16 
@@ -60,15 +64,27 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
         }
       }
       */
+      //draw map 
+      val floor = first_floor.getFloor()
+      val floor2 = first_floor.getFloor2()
+      for(x: Int <- 0 to (first_floor.getWidth()-1) ){
+        for(y: Int <- 0 to (first_floor.getHeight()-1) ){
+          if(floor(x)(y)==1){
+            paintCharacter(g, 176, x+1, y+1, Color.BLACK, "230230230")
+          }else{
+            paintCharacter(g, 250, x+1, y+1, Color.BLACK, "120120120")
+          }
+        }
+      }
       //draw ui 
       for( j <- 1 to 40 ){
-        paintCharacter(g, 249, 70, j, Color.BLACK, "255255255")
+        paintCharacter(g, 179, 71, j, Color.BLACK, "255255255")
       }
       for( j <- 1 to 70 ){
-        paintCharacter(g, 249, j, 40, Color.BLACK, "255255255")
+        paintCharacter(g, 196, j, 41, Color.BLACK, "255255255")
       }
 
-      slime.draw(g, width, height, matrix_width, matrix_height, tileset_handler) 
+      //slime.draw(g, width, height, matrix_width, matrix_height, tileset_handler) 
     }else{
       println("Couldn't load tileset, exiting.\n")
       this.main_frame.dispose()
@@ -117,10 +133,25 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
       }else if(k == Key.Right){
         slime.setX(slime.getX()+1)
         this.repaint()
+      }else if(k == Key.B){
+        println("Getting rooms")
+        first_floor.getAllRooms()
+        println("Done getting rooms")
+        this.repaint()
+      }else if(k == Key.N){
+        println("Carving tunnel")
+        first_floor.carveOneTunnel()
+        println("Done carving")
+        this.repaint()
       }else{
         println(k+"  "+ k + "\n")
       }
     case MouseClicked(_,_,_,_,_) => 
+      //first_floor = new MapPolygon(70,40, 3+r.nextInt(8), 3+r.nextInt(5), r.nextInt(360).toDouble)
+      //first_floor = new MapPolygon(70,40)
+      println("regenerating")
+      first_floor = new MapAutomata(70,40)
+      //first_floor.oneGen()
       this.repaint()
       //println("map size : " + tileset_handler.getMapSize)
   }

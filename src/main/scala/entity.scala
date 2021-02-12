@@ -20,8 +20,8 @@ abstract class Entity (x: Int, y: Int, sprite: Sprite) {
   def draw(g: Graphics2D,width: Int, height: Int, matrix_width: Int, matrix_height: Int, tileset_handler: TileSetHandler){
     g.setColor(sprite.getBgColor());
     val size:Float = width.toFloat/matrix_width.toFloat
-    val sx1:Float = (rx-1)*size
-    val sy1:Float = (ry-1)*size
+    val sx1:Float = (rx)*size-rx
+    val sy1:Float = (ry)*size-ry
     val sx2:Float = sx1 + (size-1)
     val sy2:Float = sy1 + (size-1)
     g.fillRect(sx1.toInt,sy1.toInt, tileset_handler.getSize(), tileset_handler.getSize())

@@ -123,7 +123,7 @@ class Renderer {
   }
 
 
-  def drawGame(g: Graphics2D, wwidth: Int, wheight: Int,width: Int, height: Int, ui_width: Int, ui_height: Int,floor: Map ){
+  def drawGame(g: Graphics2D, wwidth: Int, wheight: Int,width: Int, height: Int, ui_width: Int, ui_height: Int,floor: Map, player: Entity ){
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_OFF)
     g.setRenderingHint(java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION, java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED)
     g.setRenderingHint(java.awt.RenderingHints.KEY_COLOR_RENDERING, java.awt.RenderingHints.VALUE_COLOR_RENDER_SPEED)
@@ -131,6 +131,7 @@ class Renderer {
     clearScreen(g, wwidth, wheight)
     drawMap(g, wwidth, width, floor)
     drawUI(g, wwidth, width, height, ui_width, ui_height )
+    player.draw(g,wwidth,wheight,width,height, tileset_handler)
     
   }
 }

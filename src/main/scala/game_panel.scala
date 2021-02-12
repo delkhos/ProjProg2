@@ -16,10 +16,9 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   val ui_width = 9//25//9
   val ui_height = 4//13//4
 
-  var px = 1
-  var py = 1
-
   val renderer = new Renderer()
+
+  var Game = new GameObject(matrix_width-ui_width-1,matrix_height-ui_height-1)
 
   if(!renderer.initIsOk()){
     println("Couldn't load tileset, exiting!!.\n")
@@ -28,12 +27,10 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
 
   this.preferredSize = new Dimension(width, height)
 
-  val slime = new Environment(40, 23, new Sprite( Array[SubSprite](new SubSprite(234,"153051153")) , Color.BLACK), true)
 
-  var first_floor = new MapAutomata(matrix_width-ui_width-1,matrix_height-ui_height-1)
   
   override def paintComponent(g : Graphics2D) {
-    renderer.drawGame(g, width, height, matrix_width, matrix_height, ui_width, ui_height, first_floor)
+    renderer.drawGame(g, width, height, matrix_width, matrix_height, ui_width, ui_height, Game.getMap(), Game.getPlayer())
   } 
   // LISTENING TO MOUSE AND KEYBOARD
   focusable = true
@@ -66,25 +63,25 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
         this.repaint()
         println("Current resolution : width="+this.width+" height="+this.height+"\n")
       }else if(k == Key.Up){
-        slime.setY(slime.getY()-1)
+        Game.player.setY(Game.player.getY()-1)
         this.repaint()
       }else if(k == Key.Down){
-        slime.setY(slime.getY()+1)
+        Game.player.setY(Game.player.getY()+1)
         this.repaint()
       }else if(k == Key.Left){
-        slime.setX(slime.getX()-1)
+        Game.player.setX(Game.player.getX()-1)
         this.repaint()
       }else if(k == Key.Right){
-        slime.setX(slime.getX()+1)
+        Game.player.setX(Game.player.getX()+1)
         this.repaint()
       }else if(k == Key.B){
         println("Getting rooms")
-        first_floor.getAllRooms()
+        Game.getMap().getAllRooms()
         println("Done getting rooms")
         this.repaint()
       }else if(k == Key.N){
         println("Carving tunnel")
-        first_floor.carveOneTunnel()
+        Game.getMap().carveOneTunnel()
         println("Done carving")
         this.repaint()
       }else{
@@ -94,7 +91,7 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
       //first_floor = new MapPolygon(70,40, 3+r.nextInt(8), 3+r.nextInt(5), r.nextInt(360).toDouble)
       //first_floor = new MapPolygon(70,40)
       println("regenerating")
-      first_floor = new MapAutomata(70,40)
+      Game.newMap()
       //first_floor.oneGen()
       this.repaint()
       //println("map size : " + tileset_handler.getMapSize)

@@ -13,6 +13,8 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   val ui_width = 13//25//9
   val ui_height = 0//13//4
 
+  var dx = 0
+  var dy = 0
 
   val renderer = new Renderer()
   var current_size = renderer.getTileSize()
@@ -24,12 +26,10 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
     System.exit(1)
   }
 
-  this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
-
-
+  this.preferredSize = new Dimension(matrix_width*(current_size) , matrix_height*(current_size))
   
   override def paintComponent(g : Graphics2D) {
-    renderer.drawGame(g, current_size, matrix_width, matrix_height, ui_width, ui_height, game)
+    renderer.drawGame(g, current_size, matrix_width, matrix_height, ui_width, ui_height, game, dx, dy)
   } 
   // LISTENING TO MOUSE AND KEYBOARD
   focusable = true
@@ -41,32 +41,23 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   this.reactions += {
     case KeyPressed(_,k,_,_) => 
       if(k == Key.P){
-        //this.width += 10
-        //this.height = this.width*9/16
-        //this.preferredSize = new Dimension(this.width, this.height)
-        this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
         current_size += 1
+        this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
         this.main_frame.pack()
         this.repaint()
-        //println("Current resolution : width="+this.width+" height="+this.height+"\n")
+        println("Current resolution : size="+current_size)
       }else if(k == Key.M){
-        //this.width -= 10
-        //this.height = this.width*9/16
-        //this.preferredSize = new Dimension(this.width, this.height)
-        this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
         current_size -= 1
-        this.main_frame.pack()
-        this.repaint()
-        //println("Current resolution : width="+this.width+" height="+this.height+"\n")
-      }else if(k == Key.Asterisk){
-        //this.width = 1280
-        //this.height = 720
-        //this.preferredSize = new Dimension(this.width, this.height)
         this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
-        current_size = renderer.getTileSize()
         this.main_frame.pack()
         this.repaint()
-        //println("Current resolution : width="+this.width+" height="+this.height+"\n")
+        println("Current resolution : size="+current_size)
+      }else if(k == Key.Asterisk){
+        current_size = renderer.getTileSize()
+        this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
+        this.main_frame.pack()
+        this.repaint()
+        println("Current resolution : size="+current_size)
       }else if(k == Key.Up){
         if(game.first_floor.getFloor()(game.player.getX())(game.player.getY()-1) != 1 ){
           game.player.setY(game.player.getY()-1)
@@ -97,16 +88,29 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
         game.getMap().carveOneTunnel()
         println("Done carving")
         this.repaint()
+      }else if(k == Key.Z){
+        dy -= current_size/2
+        this.repaint()
+      }else if(k == Key.S){
+        dy += current_size/2
+        this.repaint()
+      }else if(k == Key.Q){
+        dx -= current_size/2
+        this.repaint()
+      }else if(k == Key.D){
+        dx += current_size/2
+        this.repaint()
+      }else if(k == Key.R){
+        dx = 0
+        dy = 0
+        this.repaint()
       }else{
+        this.repaint()
         println(k+"  "+ k + "\n")
       }
     case MouseClicked(_,_,_,_,_) => 
-      //first_floor = new MapPolygon(70,40, 3+r.nextInt(8), 3+r.nextInt(5), r.nextInt(360).toDouble)
-      //first_floor = new MapPolygon(70,40)
       println("regenerating")
       game.newMap()
-      //first_floor.oneGen()
       this.repaint()
-      //println("map size : " + tileset_handler.getMapSize)
   }
 }

@@ -4,19 +4,22 @@ import java.awt.{Color,Graphics2D, Graphics}
 
 class Renderer {
   val tileset_handler = new TileSetHandler(16, "src/main/resources/3_16.png")
+  def getTileSize():Int = {
+    return tileset_handler.getSize()
+  }
 
   def initIsOk(): Boolean = {
     return tileset_handler.isReady()
   }
 
-  def paintCharacter(g: Graphics2D,c: Int, px: Int, py: Int, bg: Color, fg: String, wwidth: Int, width: Int){
+  def paintCharacter(g: Graphics2D,c: Int, px: Int, py: Int, bg: Color, fg: String, current_size: Int){
     val x:Int = c % 16 
     val y:Int = c / 16 
     val dx1:Int = x*tileset_handler.getSize() 
     val dy1:Int = y*tileset_handler.getSize()
     val dx2:Int = dx1+(tileset_handler.getSize()-1)
     val dy2:Int = dy1+(tileset_handler.getSize()-1)
-    val size:Float = wwidth.toFloat/width.toFloat
+    val size:Float = current_size
     val sx1:Float = px*size-px
     val sy1:Float = py*size-py
     val sx2:Float = sx1 + (size-1)
@@ -25,14 +28,14 @@ class Renderer {
     g.fillRect(sx1.toInt,sy1.toInt, tileset_handler.getSize()-1, tileset_handler.getSize()-1)
     g.drawImage(tileset_handler.getColoredTileset(fg), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
   }
-  def paintCharacterGray(g: Graphics2D,c: Int, px: Int, py: Int, bg: Color, fg: String, wwidth: Int, width: Int, ratio: Double){
+  def paintCharacterGray(g: Graphics2D,c: Int, px: Int, py: Int, bg: Color, fg: String, current_size: Int, ratio: Double){
     val x:Int = c % 16 
     val y:Int = c / 16 
     val dx1:Int = x*tileset_handler.getSize() 
     val dy1:Int = y*tileset_handler.getSize()
     val dx2:Int = dx1+(tileset_handler.getSize()-1)
     val dy2:Int = dy1+(tileset_handler.getSize()-1)
-    val size:Float = wwidth.toFloat/width.toFloat
+    val size:Float = current_size
     val sx1:Float = px*size-px
     val sy1:Float = py*size-py
     val sx2:Float = sx1 + (size-1)
@@ -48,27 +51,27 @@ class Renderer {
     g.drawImage(tileset_handler.getColoredTileset(red+""+green+""+blue), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
   }
 
-  def drawString(g: Graphics2D, px: Int, py: Int, bg: Color, fg: String, wwidth: Int, width: Int, text: String){
+  def drawString(g: Graphics2D, px: Int, py: Int, bg: Color, fg: String, current_size:Int,text: String){
     for(i <- 0 to (text.length()-1)){
-      paintCharacter(g, (text.charAt(i)).toInt ,px+i,py,bg,fg,wwidth,width)
+      paintCharacter(g, (text.charAt(i)).toInt ,px+i,py,bg,fg,current_size)
     } 
   }
 
-  def clearScreen(g: Graphics2D,wwidth: Int, wheight: Int){
+  def clearScreen(g: Graphics2D,matrix_width: Int, matrix_height:Int, current_size:Int){
     g.setColor(Color.BLACK);
-    g.fillRect(0,0, wwidth, wheight)
+    g.fillRect(0,0, matrix_width*current_size, matrix_height*current_size)
   }
 
-  def drawRandomScreen(g: Graphics2D, wwidth: Int, width: Int, height: Int){
+  def drawRandomScreen(g: Graphics2D, current_size: Int, matrix_width: Int, matrix_height: Int){
     if (tileset_handler.isReady()){
       val r = scala.util.Random
-      for(i <- 1 to width ){
-        for(j <- 1 to height ){
+      for(i <- 1 to matrix_width ){
+        for(j <- 1 to matrix_height ){
           val c = r.nextInt(256)
           val red = "%03d".format(r.nextInt(11) * 25)
           val green = "%03d".format(r.nextInt(11) * 25)
           val blue = "%03d".format(r.nextInt(11) *25)
-          paintCharacter(g, c , i, j,Color.BLACK, red+green+blue, wwidth, width)
+          paintCharacter(g, c , i, j,Color.BLACK, red+green+blue, current_size)
         }
       }
     }else{
@@ -77,7 +80,7 @@ class Renderer {
     }
   }
 
-  def drawMap(g: Graphics2D, wwidth: Int, width: Int, game: GameObject ){
+  def drawMap(g: Graphics2D, current_size: Int, game: GameObject ){
     val player = game.getPlayer()
     val floor = game.getMap()
     val floor_grid = game.getMap().getFloor()
@@ -87,15 +90,15 @@ class Renderer {
           if(game.lineOfSight(player.getX(),player.getY(),x,y)){
             floor.getSeen()(x)(y)=1
             if(floor_grid(x)(y)==1){
-              paintCharacter(g, 0, x, y, new Color(180,180,180), "180180180", wwidth, width)
+              paintCharacter(g, 0, x, y, new Color(180,180,180), "180180180", current_size)
             }else{
-              paintCharacter(g, 250, x, y, Color.BLACK, "180180180", wwidth, width)
+              paintCharacter(g, 250, x, y, Color.BLACK, "180180180", current_size)
             }
           }else if(floor.getSeen()(x)(y)==1){
             if(floor_grid(x)(y)==1){
-              paintCharacterGray(g, 0, x, y, new Color(180,180,180), "180180180", wwidth, width, 0.5)
+              paintCharacterGray(g, 0, x, y, new Color(180,180,180), "180180180",current_size, 0.5)
             }else{
-              paintCharacterGray(g, 250, x, y, Color.BLACK, "180180180", wwidth, width,0.5)
+              paintCharacterGray(g, 250, x, y, Color.BLACK, "180180180", current_size,0.5)
             }
           }
         }
@@ -105,15 +108,15 @@ class Renderer {
       //System.exit(1)
     }
   }
-  def drawUI(g: Graphics2D, wwidth: Int, width: Int, height: Int, ui_width: Int, ui_height: Int){
+  def drawUI(g: Graphics2D, current_size: Int, matrix_width: Int, matrix_height: Int, ui_width: Int, ui_height: Int){
     if (tileset_handler.isReady()){
-      for( j <- 0 to (height-ui_height-2) ){
-        paintCharacter(g, 179, (width-ui_width-1) , j, Color.BLACK, "000050200", wwidth, width)
+      for( j <- 0 to (matrix_height-ui_height-2) ){
+        paintCharacter(g, 179, (matrix_width-ui_width-1) , j, Color.BLACK, "000050200", current_size)
       }
-      for( j <- 0 to (width-ui_width-2) ){
-        paintCharacter(g, 196, j, (height-ui_height-1), Color.BLACK, "000050200", wwidth,width)
+      for( j <- 0 to (matrix_width-ui_width-2) ){
+        paintCharacter(g, 196, j, (matrix_height-ui_height-1), Color.BLACK, "000050200", current_size)
       }
-      paintCharacter(g, 217, (width-ui_width-1), (height-ui_height-1), Color.BLACK, "000050200", wwidth,width)
+      paintCharacter(g, 217, (matrix_width-ui_width-1), (matrix_height-ui_height-1), Color.BLACK, "000050200", current_size)
     }else{
       println("Couldn't load tileset, exiting.\n")
       //System.exit(1)
@@ -121,16 +124,16 @@ class Renderer {
   }
 
 
-  def drawGame(g: Graphics2D, wwidth: Int, wheight: Int,width: Int, height: Int, ui_width: Int, ui_height: Int,game: GameObject){
+  def drawGame(g: Graphics2D, current_size: Int, matrix_width: Int, matrix_height: Int, ui_width: Int, ui_height: Int,game: GameObject){
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_OFF)
     g.setRenderingHint(java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION, java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED)
     g.setRenderingHint(java.awt.RenderingHints.KEY_COLOR_RENDERING, java.awt.RenderingHints.VALUE_COLOR_RENDER_SPEED)
 
-    clearScreen(g, wwidth, wheight)
-    drawMap(g, wwidth, width, game)
-    drawUI(g, wwidth, width, height, ui_width, ui_height )
-    game.getPlayer().draw(g,wwidth,wheight,width,height, tileset_handler)
-    drawString(g, 0, 47, Color.BLACK, "255255255", wwidth,width,"Ceci est un test")
+    clearScreen(g, matrix_width, matrix_height, current_size)
+    drawMap(g, current_size, game)
+    drawUI(g, current_size, matrix_width, matrix_height, ui_width, ui_height )
+    game.getPlayer().draw(g,current_size,matrix_width,matrix_height, tileset_handler)
+    drawString(g, 0, 47, Color.BLACK, "255255255", current_size,"Ceci est un test")
     
   }
 }

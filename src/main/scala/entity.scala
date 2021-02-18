@@ -17,9 +17,9 @@ abstract class Entity (x: Int, y: Int, sprite: Sprite) {
   def setY(ny: Int){
     ry=ny 
   }
-  def draw(g: Graphics2D,width: Int, height: Int, matrix_width: Int, matrix_height: Int, tileset_handler: TileSetHandler){
+  def draw(g: Graphics2D, current_size: Int, matrix_width: Int, matrix_height: Int, tileset_handler: TileSetHandler){
     g.setColor(sprite.getBgColor());
-    val size:Float = width.toFloat/matrix_width.toFloat
+    val size:Float = current_size
     val sx1:Float = (rx)*size-rx
     val sy1:Float = (ry)*size-ry
     val sx2:Float = sx1 + (size-1)

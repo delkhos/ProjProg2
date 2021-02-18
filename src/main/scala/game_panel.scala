@@ -7,16 +7,15 @@ import java.awt.image.BufferedImage
 import java.awt.event.KeyEvent
 
 class GamePanel(main_frame: MainFrame ) extends Panel {
-  var width = 1280
-  var height = 720
-
   val matrix_width = 80//96 //80
   val matrix_height = 45//54 //45
 
   val ui_width = 13//25//9
   val ui_height = 0//13//4
 
+
   val renderer = new Renderer()
+  var current_size = renderer.getTileSize()
 
   var game = new GameObject(matrix_width-ui_width-1,matrix_height-ui_height-1)
 
@@ -25,12 +24,12 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
     System.exit(1)
   }
 
-  this.preferredSize = new Dimension(width, height)
+  this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
 
 
   
   override def paintComponent(g : Graphics2D) {
-    renderer.drawGame(g, width, height, matrix_width, matrix_height, ui_width, ui_height, game)
+    renderer.drawGame(g, current_size, matrix_width, matrix_height, ui_width, ui_height, game)
   } 
   // LISTENING TO MOUSE AND KEYBOARD
   focusable = true
@@ -42,26 +41,32 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   this.reactions += {
     case KeyPressed(_,k,_,_) => 
       if(k == Key.P){
-        this.width += 10
-        this.height = this.width*9/16
-        this.preferredSize = new Dimension(this.width, this.height)
+        //this.width += 10
+        //this.height = this.width*9/16
+        //this.preferredSize = new Dimension(this.width, this.height)
+        this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
+        current_size += 1
         this.main_frame.pack()
         this.repaint()
-        println("Current resolution : width="+this.width+" height="+this.height+"\n")
+        //println("Current resolution : width="+this.width+" height="+this.height+"\n")
       }else if(k == Key.M){
-        this.width -= 10
-        this.height = this.width*9/16
-        this.preferredSize = new Dimension(this.width, this.height)
+        //this.width -= 10
+        //this.height = this.width*9/16
+        //this.preferredSize = new Dimension(this.width, this.height)
+        this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
+        current_size -= 1
         this.main_frame.pack()
         this.repaint()
-        println("Current resolution : width="+this.width+" height="+this.height+"\n")
+        //println("Current resolution : width="+this.width+" height="+this.height+"\n")
       }else if(k == Key.Asterisk){
-        this.width = 1280
-        this.height = 720
-        this.preferredSize = new Dimension(this.width, this.height)
+        //this.width = 1280
+        //this.height = 720
+        //this.preferredSize = new Dimension(this.width, this.height)
+        this.preferredSize = new Dimension(matrix_width*current_size , matrix_height*current_size)
+        current_size = renderer.getTileSize()
         this.main_frame.pack()
         this.repaint()
-        println("Current resolution : width="+this.width+" height="+this.height+"\n")
+        //println("Current resolution : width="+this.width+" height="+this.height+"\n")
       }else if(k == Key.Up){
         if(game.first_floor.getFloor()(game.player.getX())(game.player.getY()-1) != 1 ){
           game.player.setY(game.player.getY()-1)

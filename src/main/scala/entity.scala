@@ -24,7 +24,7 @@ abstract class Entity (x: Int, y: Int, sprite: Sprite) {
     val sy1:Float = (ry)*size-ry
     val sx2:Float = sx1 + (size-1)
     val sy2:Float = sy1 + (size-1)
-    g.fillRect(sx1.toInt,sy1.toInt, tileset_handler.getSize(), tileset_handler.getSize())
+    g.fillRect(sx1.toInt,sy1.toInt, tileset_handler.getSize()-1, tileset_handler.getSize()-1)
 
     val elements = sprite.getElements()
     for(i <- 0 to (elements.size-1) ){

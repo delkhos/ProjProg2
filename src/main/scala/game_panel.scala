@@ -13,12 +13,12 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   val matrix_width = 80//96 //80
   val matrix_height = 45//54 //45
 
-  val ui_width = 9//25//9
-  val ui_height = 4//13//4
+  val ui_width = 13//25//9
+  val ui_height = 0//13//4
 
   val renderer = new Renderer()
 
-  var Game = new GameObject(matrix_width-ui_width-1,matrix_height-ui_height-1)
+  var game = new GameObject(matrix_width-ui_width-1,matrix_height-ui_height-1)
 
   if(!renderer.initIsOk()){
     println("Couldn't load tileset, exiting!!.\n")
@@ -30,7 +30,7 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
 
   
   override def paintComponent(g : Graphics2D) {
-    renderer.drawGame(g, width, height, matrix_width, matrix_height, ui_width, ui_height, Game.getMap(), Game.getPlayer())
+    renderer.drawGame(g, width, height, matrix_width, matrix_height, ui_width, ui_height, game)
   } 
   // LISTENING TO MOUSE AND KEYBOARD
   focusable = true
@@ -63,25 +63,33 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
         this.repaint()
         println("Current resolution : width="+this.width+" height="+this.height+"\n")
       }else if(k == Key.Up){
-        Game.player.setY(Game.player.getY()-1)
-        this.repaint()
+        if(game.first_floor.getFloor()(game.player.getX())(game.player.getY()-1) != 1 ){
+          game.player.setY(game.player.getY()-1)
+          this.repaint()
+        }
       }else if(k == Key.Down){
-        Game.player.setY(Game.player.getY()+1)
-        this.repaint()
+        if(game.first_floor.getFloor()(game.player.getX())(game.player.getY()+1) != 1 ){
+          game.player.setY(game.player.getY()+1)
+          this.repaint()
+        }
       }else if(k == Key.Left){
-        Game.player.setX(Game.player.getX()-1)
-        this.repaint()
+        if(game.first_floor.getFloor()(game.player.getX()-1)(game.player.getY()) != 1 ){
+          game.player.setX(game.player.getX()-1)
+          this.repaint()
+        }
       }else if(k == Key.Right){
-        Game.player.setX(Game.player.getX()+1)
-        this.repaint()
+        if(game.first_floor.getFloor()(game.player.getX()+1)(game.player.getY()) != 1 ){
+          game.player.setX(game.player.getX()+1)
+          this.repaint()
+        }
       }else if(k == Key.B){
         println("Getting rooms")
-        Game.getMap().getAllRooms()
+        game.getMap().getAllRooms()
         println("Done getting rooms")
         this.repaint()
       }else if(k == Key.N){
         println("Carving tunnel")
-        Game.getMap().carveOneTunnel()
+        game.getMap().carveOneTunnel()
         println("Done carving")
         this.repaint()
       }else{
@@ -91,7 +99,7 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
       //first_floor = new MapPolygon(70,40, 3+r.nextInt(8), 3+r.nextInt(5), r.nextInt(360).toDouble)
       //first_floor = new MapPolygon(70,40)
       println("regenerating")
-      Game.newMap()
+      game.newMap()
       //first_floor.oneGen()
       this.repaint()
       //println("map size : " + tileset_handler.getMapSize)

@@ -4,9 +4,13 @@ import util.control.Breaks._
 
 class Map(width: Int, height: Int){
   var floor = Array.ofDim[Int](width,height)
+  var hasBeenSeen = Array.ofDim[Int](width,height)
 
   def getFloor(): Array[Array[Int]] = {
     return floor
+  }
+  def getSeen(): Array[Array[Int]] = {
+    return hasBeenSeen
   }
   def getWidth(): Int = {
     return width

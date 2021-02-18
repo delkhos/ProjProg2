@@ -20,11 +20,11 @@ abstract class Entity (x: Int, y: Int, sprite: Sprite) {
   def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dx: Int, dy: Int){
     g.setColor(sprite.getBgColor());
     val size:Float = current_size
-    val sx1:Float = (rx)*size-rx + dx
-    val sy1:Float = (ry)*size-ry + dy
-    val sx2:Float = sx1 + (size-1)
-    val sy2:Float = sy1 + (size-1)
-    g.fillRect(sx1.toInt,sy1.toInt, current_size-1, current_size-1)
+    val sx1:Float = (rx)*size +dx //-rx
+    val sy1:Float = (ry)*size + dy //-ry 
+    val sx2:Float = sx1 + (size)
+    val sy2:Float = sy1 + (size)
+    g.fillRect(sx1.toInt,sy1.toInt, current_size, current_size)
 
     val elements = sprite.getElements()
     for(i <- 0 to (elements.size-1) ){
@@ -33,8 +33,8 @@ abstract class Entity (x: Int, y: Int, sprite: Sprite) {
       val yv:Int = c / 16 
       val dx1:Int = xv*tileset_handler.getSize() 
       val dy1:Int = yv*tileset_handler.getSize()
-      val dx2:Int = dx1+(tileset_handler.getSize()-1)
-      val dy2:Int = dy1+(tileset_handler.getSize()-1)
+      val dx2:Int = dx1+(tileset_handler.getSize())
+      val dy2:Int = dy1+(tileset_handler.getSize())
       g.drawImage(tileset_handler.getColoredTileset(elements(i).getColor()), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
     }
   }

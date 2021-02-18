@@ -1,5 +1,5 @@
-[0m[[0m[0mdebug[0m] [0m[0m> Exec(clean, Some(7fd37bc6-bbae-4c6c-8b9a-23c1fe8aa4bf), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(clean, Some(bb1ff6d0-b7d4-4c75-85e0-69b1a4dfe927), Some(CommandSource(console0)))[0m
 [0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: clean[0m
 [0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
-[0m[[0m[32msuccess[0m] [0m[0mTotal time: 0 s, completed Feb 18, 2021, 8:15:26 PM[0m
+[0m[[0m[32msuccess[0m] [0m[0mTotal time: 0 s, completed Feb 18, 2021, 10:17:01 PM[0m
 [0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m

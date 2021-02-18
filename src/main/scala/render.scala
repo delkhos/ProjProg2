@@ -86,8 +86,7 @@ class Renderer {
     if (tileset_handler.isReady()){
       for(x: Int <- 0 to (floor.getWidth()-1) ){
         for(y: Int <- 0 to (floor.getHeight()-1) ){
-          //if(game.lineOfSight(player.getX(),player.getY(),x,y)){
-          if(true){
+          if(game.lineOfSight(player.getX(),player.getY(),x,y)){
             floor.getSeen()(x)(y)=1
             if(floor_grid(x)(y)==1){
               paintCharacter(g, 0, x, y, new Color(180,180,180), "180180180", current_size, dx, dy)

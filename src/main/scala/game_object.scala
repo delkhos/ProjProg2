@@ -4,7 +4,7 @@ import java.awt.{Color,Graphics2D, Graphics}
 
 class GameObject(width: Int, height: Int) { 
   var first_floor = new MapAutomata(width, height)
-  var player = new Environment(0, 0, new Sprite( Array[SubSprite](new SubSprite(178,"153051153")) , Color.BLACK), true)
+  var player = new Player(0, 0, new Sprite( Array[SubSprite](new SubSprite(178,"153051153")) , Color.BLACK), true, 10)
 
   placePlayer()
 
@@ -12,7 +12,7 @@ class GameObject(width: Int, height: Int) {
     val r = scala.util.Random
     var x = r.nextInt(width)
     var y = r.nextInt(height)
-    while((first_floor.getFloor())(x)(y) != 0){
+    while((first_floor.getFloor())(x)(y).getBlocking() == true){
       x = r.nextInt(width)
       y = r.nextInt(height)
     }
@@ -39,7 +39,7 @@ class GameObject(width: Int, height: Int) {
         if(x==x2 && y==y2){
           return true
         }
-      }while(first_floor.getFloor()(x)(y)==0)
+      }while(first_floor.getFloor()(x)(y).getBlocking()==false)
       return false
     }else{
       var t = deltaX*2-deltaY
@@ -53,7 +53,7 @@ class GameObject(width: Int, height: Int) {
         if(x==x2 && y==y2){
           return true
         }
-      }while(first_floor.getFloor()(x)(y)==0)
+      }while(first_floor.getFloor()(x)(y).getBlocking()==false)
       return false
     }
   }

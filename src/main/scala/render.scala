@@ -83,28 +83,17 @@ class Renderer {
     val player = game.getPlayer()
     val floor = game.getMap()
     val floor_grid = game.getMap().getFloor()
-    if (tileset_handler.isReady()){
-      for(x: Int <- 0 to (floor.getWidth()-1) ){
-        for(y: Int <- 0 to (floor.getHeight()-1) ){
-          if(game.lineOfSight(player.getX(),player.getY(),x,y)){
-            floor.getSeen()(x)(y)=1
-            if(floor_grid(x)(y)==1){
-              paintCharacter(g, 0, x, y, new Color(180,180,180), "180180180", current_size, dx, dy)
-            }else{
-              paintCharacter(g, 250, x, y, Color.BLACK, "180180180", current_size, dx, dy)
-            }
-          }else if(floor.getSeen()(x)(y)==1){
-            if(floor_grid(x)(y)==1){
-              paintCharacterGray(g, 0, x, y, new Color(180,180,180), "180180180",current_size, 0.5, dx, dy)
-            }else{
-              paintCharacterGray(g, 250, x, y, Color.BLACK, "180180180", current_size,0.5, dx, dy)
-            }
-          }
+    for(x: Int <- 0 to (floor.getWidth()-1) ){
+      for(y: Int <- 0 to (floor.getHeight()-1) ){
+        if(game.lineOfSight(player.getX(),player.getY(),x,y)){
+          floor.getSeen()(x)(y)=1
+          floor_grid(x)(y).draw(g,current_size, tileset_handler,dx,dy,x,y)
+          //////
+          //println(floor_grid(x)(y))
+        }else if(floor.getSeen()(x)(y)==1){
+          floor_grid(x)(y).draw(g,current_size, tileset_handler,dx,dy,x,y,0.5)
         }
       }
-    }else{
-      println("Couldn't load tileset, exiting.\n")
-      //System.exit(1)
     }
   }
   def drawUI(g: Graphics2D, matrix_width: Int, matrix_height: Int, ui_width: Int, ui_height: Int){

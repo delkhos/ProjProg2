@@ -3,10 +3,10 @@ package rogue
 import util.control.Breaks._
 
 class Map(width: Int, height: Int){
-  var floor = Array.ofDim[Int](width,height)
+  var floor = Array.ofDim[Environment](width,height)
   var hasBeenSeen = Array.ofDim[Int](width,height)
 
-  def getFloor(): Array[Array[Int]] = {
+  def getFloor(): Array[Array[Environment]] = {
     return floor
   }
   def getSeen(): Array[Array[Int]] = {
@@ -22,7 +22,8 @@ class Map(width: Int, height: Int){
 }
 
 class MapAutomata(width: Int, height: Int) extends Map(width,height){
-  var floor2 = Array.ofDim[Int](width,height)
+  var floor2 = Array.ofDim[Environment](width,height)
+  var floor3 = Array.ofDim[Int](width,height)
   val r = scala.util.Random
   val initial_wall_chance = 40
 
@@ -30,7 +31,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   val death = 3
 
   def getFloor2(): Array[Array[Int]] = {
-    return floor2
+    return floor3
   }
 
   def oneGen():Boolean = {
@@ -43,24 +44,24 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
             if(i==0 && j==0){
             }else if(x+i<0 || (x+i)>=width  || (y+j)<0 || (y+j)>=height){
               count1+=1
-            }else if(floor(x+i)(y+j)==1){
+            }else if(floor(x+i)(y+j)==Granite){
               count1+=1
             }
           }
         }
-        if(floor(x)(y)==1){
+        if(floor(x)(y)==Granite){
           if(count1 < death){
-            floor2(x)(y) = 0
+            floor2(x)(y) = Empty
             continue = true
           }else{
-            floor2(x)(y) = 1
+            floor2(x)(y) = Granite
           }
         }else{
           if(count1 > birth){
-            floor2(x)(y) = 1
+            floor2(x)(y) = Granite
             continue = true
           }else{
-            floor2(x)(y) = 0
+            floor2(x)(y) = Empty
           }
         }
       }
@@ -77,9 +78,9 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     for(x: Int <- 0 to (width-1) ){
       for(y: Int <- 0 to (height-1) ){
         if(r.nextInt(100)<initial_wall_chance){
-          floor(x)(y)=1
+          floor(x)(y)=Granite
         }else{
-          floor(x)(y)=0
+          floor(x)(y)=Empty
         }
       }
     }
@@ -88,12 +89,12 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
       k+=1
     }
     for(y <- 0 to (height-1) ){
-        floor(0)(y) = 1
-        floor(width-1)(y) = 1
+        floor(0)(y) = Granite
+        floor(width-1)(y) = Granite
     }
     for(x <- 0 to (width-1) ){
-        floor(x)(0) = 1
-        floor(x)(height-1) = 1
+        floor(x)(0) = Granite
+        floor(x)(height-1) = Granite
     }
     for(x <- 0 to (width-1) ){
       for(y <- 0 to (height-1) ){
@@ -106,10 +107,10 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
 
   def pouring(x: Int, y: Int):Int = {
     //println("inner pouring at: "+x+"  "+y+"  "+floor(x)(y))
-    if(floor2(x)(y)!=0 ){
+    if(floor3(x)(y)!=0 ){
       return 0;
     }else{
-      floor2(x)(y) = 1
+      floor3(x)(y) = 1
       return 1 + pouring(x+1,y)+ pouring(x-1,y) + pouring(x,y+1) + pouring(x,y-1) 
     }
   }
@@ -117,7 +118,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   def testConnexity(free: Int):Boolean = {
     for(x <- 0 to (width-1) ){
       for(y <- 0 to (height-1) ){
-          floor2(x)(y) = floor(x)(y)
+        floor3(x)(y) = if (floor(x)(y)==Granite) 1 else 0
       }
     }
     // using bucket pour method
@@ -144,10 +145,10 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   }
   def pouringRoom(x: Int, y: Int, n: Int):Int = {
     //println("inner pouring at: "+x+"  "+y+"  "+floor(x)(y))
-    if(floor2(x)(y)!=0 ){
+    if(floor3(x)(y)!=0 ){
       return 0;
     }else{
-      floor2(x)(y) = n
+      floor3(x)(y) = n
       return 1 + pouringRoom(x+1,y,n)+ pouringRoom(x-1,y,n) + pouringRoom(x,y+1,n) + pouringRoom(x,y-1,n) 
     }
   }
@@ -174,13 +175,14 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   def getAllRooms():Int = {
     for(x <- 0 to (width-1) ){
       for(y <- 0 to (height-1) ){
-          floor2(x)(y) = floor(x)(y)
+        floor3(x)(y) = if (floor(x)(y)==Granite) 1 else 0
+        //floor2(x)(y) = floor(x)(y)
       }
     }
     var free = 0
     for(x <- 0 to (width-1) ){
       for(y <- 0 to (height-1) ){ 
-        if(floor2(x)(y)!=1){
+        if(floor3(x)(y)!=1){
           free += 1
         }
       }
@@ -191,7 +193,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
       free = 0
       for(x <- 0 to (width-1) ){
         for(y <- 0 to (height-1) ){ 
-          if(floor2(x)(y)==1){
+          if(floor3(x)(y)==1){
             free += 1
           }
         }
@@ -209,10 +211,10 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     var alongX = true
     for(x1 <- 0 to (width-1) ){
       for(y1 <- 0 to (height-1) ){
-        if(floor2(x1)(y1) == 1 && floor(x1)(y1)==0){
+        if(floor3(x1)(y1) == 1 && floor(x1)(y1)==Empty){
           for(x2 <- 0 to (width-1) ){
             for(y2 <- 0 to (height-1) ){
-              if((x1!=x2 || y1!=y2) && (x1==x2 || y1==y2) && floor2(x2)(y2)>1)
+              if((x1!=x2 || y1!=y2) && (x1==x2 || y1==y2) && floor3(x2)(y2)>1)
               {
                 var d = 0
                 var alX = true
@@ -245,25 +247,25 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     if(alongX == true){
       if(tx1 <= tx2){
         for(i <- tx1 to tx2){
-          floor(i)(ty1) = 0
-          floor2(i)(ty1) = 0
+          floor(i)(ty1) = Empty
+          floor3(i)(ty1) = 0
         }
       }else{
         for(i <- tx2 to tx1){
-          floor(i)(ty1) = 0
-          floor2(i)(ty1) = 0
+          floor(i)(ty1) = Empty
+          floor3(i)(ty1) = 0
         }
       }
     }else{
       if(ty1 <= ty2){
         for(j <- ty1 to ty2){
-          floor(tx1)(j) = 0
-          floor2(tx1)(j) = 0
+          floor(tx1)(j) = Empty
+          floor3(tx1)(j) = 0
         }
       }else{
         for(j <- ty2 to ty1){
-          floor(tx1)(j) = 0
-          floor2(tx1)(j) = 0
+          floor(tx1)(j) = Empty
+          floor3(tx1)(j) = 0
         }
       }
     }
@@ -274,7 +276,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     var free = 0
     for(x <- 0 to (width-1) ){
       for(y <- 0 to (height-1) ){ 
-        if(floor(x)(y)!=1){
+        if(floor(x)(y)!=Granite){
           free += 1
         }
       }
@@ -292,7 +294,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   }
   generateConnexByCarving()
 }
-
+/*
 class MapPolygon(width: Int, height: Int, sides:Int, radius: Int, rotation: Double) extends Map(width,height){
   val rot = rotation*(scala.math.Pi / 180.0)
 
@@ -323,3 +325,4 @@ class MapPolygon(width: Int, height: Int, sides:Int, radius: Int, rotation: Doub
 
   }
 }
+*/

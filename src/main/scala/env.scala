@@ -1,24 +1,12 @@
 package rogue
 
-import java.awt.Color
-import java.awt.Graphics2D
+import java.awt.{Color,Graphics2D, Graphics}
 
-abstract class Entity (x: Int, y: Int, sprite: Sprite) {
-  var rx = x
-  var ry = y
-  def getX(): Int = {
-    return rx
+class Environment(sprite: Sprite, blocking: Boolean) extends{
+  def getBlocking(): Boolean = {
+    return blocking
   }
-  def getY(): Int = {
-    return ry
-  }
-  def setX(nx: Int){
-    rx=nx
-  }
-  def setY(ny: Int){
-    ry=ny 
-  }
-  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dx: Int, dy: Int){
+  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dx: Int, dy: Int,rx: Int, ry: Int){
     g.setColor(sprite.getBgColor());
     val size:Float = current_size
     val sx1:Float = (rx)*size +dx //-rx
@@ -39,7 +27,7 @@ abstract class Entity (x: Int, y: Int, sprite: Sprite) {
       g.drawImage(tileset_handler.getColoredTileset(elements(i).getColor()), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
     }
   }
-  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dx: Int, dy: Int, ratio: Double){
+  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dx: Int, dy: Int,rx: Int, ry:Int,  ratio: Double){
     val bg = sprite.getBgColor()
     g.setColor(new Color( (bg.getRed() * ratio).toInt , (bg.getGreen() * ratio).toInt, (bg.getBlue() * ratio).toInt    ));
     val size:Float = current_size
@@ -64,18 +52,15 @@ abstract class Entity (x: Int, y: Int, sprite: Sprite) {
       val blue = "%03d".format((fg.substring(6,9).toInt*ratio).toInt)
       g.drawImage(tileset_handler.getColoredTileset(red+green+blue), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
     }
-  }
+  } 
 }
 
 
-abstract class LivingEntity(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth: Int) extends Entity(x,y,sprite) {
+object Granite extends Environment(
+  new Sprite(Array[SubSprite](new SubSprite(0,"255255255")) ,new Color(180,180,180))
+  , true) {
 }
-
-class Monster(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth: Int, ia: ArtificialIntelligence) extends LivingEntity(x,y,sprite, collidable, maxHealth) {
-}
-
-class Player(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth: Int) extends LivingEntity(x,y,sprite,collidable,maxHealth) {
-}
-
-class Item (x: Int, y: Int, sprite: Sprite, equipable: Boolean, on_the_ground: Boolean) extends Entity(x,y,sprite) {
+object Empty extends Environment(
+  new Sprite(Array[SubSprite](new SubSprite(250,"180180180")) ,Color.BLACK)
+  , false) {
 }

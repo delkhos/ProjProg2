@@ -4,8 +4,8 @@ import util.control.Breaks._
 
 class Map(width: Int, height: Int){
   var floor = Array.ofDim[Environment](width,height)
-  var hasBeenSeen = Array.ofDim[Int](width,height)
-
+  var hasBeenSeen = Array.ofDim[Int](width,height) 
+  
   def getFloor(): Array[Array[Environment]] = {
     return floor
   }
@@ -24,6 +24,9 @@ class Map(width: Int, height: Int){
 class MapAutomata(width: Int, height: Int) extends Map(width,height){
   var floor2 = Array.ofDim[Environment](width,height)
   var floor3 = Array.ofDim[Int](width,height)
+  var roomMap = Array.ofDim[Int](width,height)
+  var biomeMap = Array.ofDim[String](width,height)
+
   val r = scala.util.Random
   val initial_wall_chance = 40
 
@@ -149,6 +152,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
       return 0;
     }else{
       floor3(x)(y) = n
+      roomMap(x)(y) = n
       return 1 + pouringRoom(x+1,y,n)+ pouringRoom(x-1,y,n) + pouringRoom(x,y+1,n) + pouringRoom(x,y-1,n) 
     }
   }
@@ -288,11 +292,27 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
 
   def generateConnexByCarving(){
     generate()
+    val room_count=getAllRooms()
     while(getAllRooms()>1){
       carveOneTunnel()
     }
+    return room_count
   }
-  generateConnexByCarving()
+  
+  /*def fillBiome(room_count:Int){
+    for(n <- 1 to (room_count) ){
+      var biome = getRandomBiome()
+      for(x <-0 to (width-1) ){
+        for(y <- 0 to (height-1) ){
+          if(roomMap(x)(y)=n){
+          biomeMap(x)(y)=biome }
+        }
+      }
+    }
+  }
+  */
+ val n = generateConnexByCarving()
+ // fillBiome(n)
 }
 /*
 class MapPolygon(width: Int, height: Int, sides:Int, radius: Int, rotation: Double) extends Map(width,height){
@@ -326,3 +346,7 @@ class MapPolygon(width: Int, height: Int, sides:Int, radius: Int, rotation: Doub
   }
 }
 */
+
+
+
+

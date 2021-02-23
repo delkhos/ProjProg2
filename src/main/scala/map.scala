@@ -9,6 +9,7 @@ class Map(width: Int, height: Int){
   def getFloor(): Array[Array[Environment]] = {
     return floor
   }
+ 
   def getSeen(): Array[Array[Int]] = {
     return hasBeenSeen
   }
@@ -24,8 +25,7 @@ class Map(width: Int, height: Int){
 class MapAutomata(width: Int, height: Int) extends Map(width,height){
   var floor2 = Array.ofDim[Environment](width,height)
   var floor3 = Array.ofDim[Int](width,height)
-  var roomMap = Array.ofDim[Int](width,height)
-  var biomeMap = Array.ofDim[String](width,height)
+  var biomeMap = Array.ofDim[Biome](width,height)
 
   val r = scala.util.Random
   val initial_wall_chance = 40
@@ -36,6 +36,28 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   def getFloor2(): Array[Array[Int]] = {
     return floor3
   }
+  def getBiome(): Array[Array[Biome]] = {
+    return biomeMap
+  }
+  def intToBiome(biomeID:Int): Biome = {
+        biomeID match{
+        case 0 => return( Neutral )
+        case 1 => return( Field )
+        case 2 => return ( Temple )
+        case _ => return ( Cave )
+        }
+  }
+
+  def initBiomeMap () {
+    for (x<- 0 to  (width-1)){
+      for (y<- 0 to (height-1)){
+        biomeMap(x)(y) = Neutral
+      }
+    }
+  }
+
+
+
 
   def oneGen():Boolean = {
     var continue = false
@@ -77,7 +99,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     return continue
   }
 
-  def generate(){
+  def generate() {
     for(x: Int <- 0 to (width-1) ){
       for(y: Int <- 0 to (height-1) ){
         if(r.nextInt(100)<initial_wall_chance){
@@ -91,16 +113,16 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     while(oneGen() && k < 50 ){
       k+=1
     }
-    for(y <- 0 to (height-1) ){
+    for(y: Int <- 0 to (height-1) ){
         floor(0)(y) = Granite
         floor(width-1)(y) = Granite
     }
-    for(x <- 0 to (width-1) ){
+    for(x: Int <- 0 to (width-1) ){
         floor(x)(0) = Granite
         floor(x)(height-1) = Granite
     }
-    for(x <- 0 to (width-1) ){
-      for(y <- 0 to (height-1) ){
+    for(x<- 0 to (width-1) ){
+      for(y: Int <- 0 to (height-1) ){
           floor2(x)(y) = floor(x)(y)
       }
     }
@@ -146,26 +168,31 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     }
     return !stop
   }
-  def pouringRoom(x: Int, y: Int, n: Int):Int = {
+
+  def pouringRoom(x: Int, y: Int, n: Int, b: Biome):Int = {
     //println("inner pouring at: "+x+"  "+y+"  "+floor(x)(y))
     if(floor3(x)(y)!=0 ){
       return 0;
     }else{
-      floor3(x)(y) = n
-      roomMap(x)(y) = n
-      return 1 + pouringRoom(x+1,y,n)+ pouringRoom(x-1,y,n) + pouringRoom(x,y+1,n) + pouringRoom(x,y-1,n) 
-    }
+      if (biomeMap(x)(y) == Neutral){
+        floor3(x)(y) = n
+        biomeMap(x)(y) = b
+        return 1 + pouringRoom(x+1,y,n,b)+ pouringRoom(x-1,y,n,b) + pouringRoom(x,y+1,n,b) + pouringRoom(x,y-1,n,b) 
+      }else{
+        floor3(x)(y) = n
+        return 1 + pouringRoom(x+1,y,n,b)+ pouringRoom(x-1,y,n,b) + pouringRoom(x,y+1,n,b) + pouringRoom(x,y-1,n,b) 
+      }
+    }  
   }
 
-  def getRooms(free: Int, room_number: Int):Boolean = {
+  def getRooms(free: Int, room_number: Int, biome: Biome):Boolean = {
     // using bucket pour method
     var i = 1
     var stop = false
-
     while(i <= (width-2) && !stop ){
       var j = 1
       while(j <= (height-2)  && !stop){ 
-        val pour_value = pouringRoom(i,j,room_number)
+        val pour_value = pouringRoom(i,j,room_number,biome)
         if(pour_value!=free && pour_value!=0){
           //println("non connexe avec le noeud : "+i+"  "+j)
           stop = true
@@ -183,6 +210,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
         //floor2(x)(y) = floor(x)(y)
       }
     }
+    var biome: Biome = intToBiome(r.nextInt(4))
     var free = 0
     for(x <- 0 to (width-1) ){
       for(y <- 0 to (height-1) ){ 
@@ -192,8 +220,10 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
       }
     }
     var n = 1
-    while(!getRooms(free,n)){
+    while(!getRooms(free,n,biome)){
       n += 1
+      biome = intToBiome(r.nextInt(4))
+      println("the chosen biome is "+ biome)
       free = 0
       for(x <- 0 to (width-1) ){
         for(y <- 0 to (height-1) ){ 
@@ -251,24 +281,28 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     if(alongX == true){
       if(tx1 <= tx2){
         for(i <- tx1 to tx2){
-          floor(i)(ty1) = Empty
+          floor(i)(ty1) = EmptyTemple
+          biomeMap(i)(ty1) = Temple
           floor3(i)(ty1) = 0
         }
       }else{
         for(i <- tx2 to tx1){
-          floor(i)(ty1) = Empty
+          floor(i)(ty1) = EmptyTemple
+          biomeMap(i)(ty1) = Temple
           floor3(i)(ty1) = 0
         }
       }
     }else{
       if(ty1 <= ty2){
         for(j <- ty1 to ty2){
-          floor(tx1)(j) = Empty
+          floor(tx1)(j) = EmptyTemple
+          biomeMap(tx1)(j) = Temple
           floor3(tx1)(j) = 0
         }
       }else{
         for(j <- ty2 to ty1){
-          floor(tx1)(j) = Empty
+          floor(tx1)(j) = EmptyTemple
+          biomeMap(tx1)(j) = Temple
           floor3(tx1)(j) = 0
         }
       }
@@ -290,29 +324,37 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     }
   }
 
-  def generateConnexByCarving(){
+  def generateConnexByCarving():Int={
     generate()
+    initBiomeMap()
     val room_count=getAllRooms()
+    println( "room_count is " + room_count )
     while(getAllRooms()>1){
       carveOneTunnel()
     }
     return room_count
   }
+
   
-  /*def fillBiome(room_count:Int){
-    for(n <- 1 to (room_count) ){
-      var biome = getRandomBiome()
-      for(x <-0 to (width-1) ){
-        for(y <- 0 to (height-1) ){
-          if(roomMap(x)(y)=n){
-          biomeMap(x)(y)=biome }
+  def applyBiomes(){
+    for (x: Int <- 0 to (width-1)){
+      for (y: Int <- 0 to (height-1)){
+        if (floor(x)(y) == Empty){
+          floor(x)(y) = biomeMap(x)(y) match{
+            case Field => EmptyField
+            case Cave => EmptyCave
+            case Neutral => Empty
+            case Temple => EmptyTemple
+          }
         }
       }
     }
   }
-  */
- val n = generateConnexByCarving()
- // fillBiome(n)
+
+  
+  generateConnexByCarving()
+  applyBiomes()
+
 }
 /*
 class MapPolygon(width: Int, height: Int, sides:Int, radius: Int, rotation: Double) extends Map(width,height){

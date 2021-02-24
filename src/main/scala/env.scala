@@ -2,6 +2,23 @@ package rogue
 
 import java.awt.{Color,Graphics2D, Graphics}
 
+abstract class Biome(mainColor: String){
+  def getMainColor() : String = {
+    return mainColor
+  }
+}
+object Cave extends Biome("153051000"){
+}
+
+object Field extends Biome("000153000"){
+}
+
+object Temple extends Biome("255255153"){
+}
+
+object Neutral extends Biome("000000000"){
+}
+
 class Environment(sprite: Sprite, blocking: Boolean) extends{
   def getBlocking(): Boolean = {
     return blocking
@@ -60,7 +77,23 @@ object Granite extends Environment(
   new Sprite(Array[SubSprite](new SubSprite(0,"255255255")) ,new Color(180,180,180))
   , true) {
 }
+
 object Empty extends Environment(
   new Sprite(Array[SubSprite](new SubSprite(250,"180180180")) ,Color.BLACK)
+  , false) {
+}
+
+object EmptyField extends Environment(
+  new Sprite(Array[SubSprite](new SubSprite(258,Field.getMainColor())) ,Color.BLACK)
+  , false) {
+}
+
+object EmptyCave extends Environment(
+  new Sprite(Array[SubSprite](new SubSprite(176,Cave.getMainColor())) ,Color.BLACK)
+  , false) {
+}
+
+object EmptyTemple extends Environment(
+  new Sprite(Array[SubSprite](new SubSprite(250,Temple.getMainColor())) ,Color.BLACK)
   , false) {
 }

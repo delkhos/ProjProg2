@@ -4,7 +4,7 @@ import java.awt.{Color,Graphics2D, Graphics}
 
 class GameObject(width: Int, height: Int) { 
   var first_floor = new MapAutomata(width, height)
-  var player = new Player(1, 0, new Sprite( Array[SubSprite](new SubSprite(256,"153051153")) , Color.BLACK), true, 20, 60, 10,"the Hero","000000255")
+  var player = new Player(1, 0, new Sprite( Array[SubSprite](new SubSprite(256,"153051153")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
   var monsters: List[Monster] = List() 
   var mouse_dir: Position = null
 

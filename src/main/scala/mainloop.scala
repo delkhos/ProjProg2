@@ -15,40 +15,57 @@ object MainLoopObject{
           panel.repaint()
           println("Current resolution : size="+vars.getCURRENT_SIZE())
         }else if(k == Key.Up){
-          if(game.first_floor.getFloor()(game.player.getX())(game.player.getY()-1).getBlocking()==false ){
+          if(game.occupied(game.player.getX(),game.player.getY()-1)==false ){
             game.player.setY(game.player.getY()-1)
+            game.processDecisions()
             panel.repaint()
           }
         }else if(k == Key.Down){
-          if(game.first_floor.getFloor()(game.player.getX())(game.player.getY()+1).getBlocking()==false ){
+          if(game.occupied(game.player.getX(),game.player.getY()+1)==false ){
             game.player.setY(game.player.getY()+1)
+            game.processDecisions()
             panel.repaint()
           }
         }else if(k == Key.Left){
-          if(game.first_floor.getFloor()(game.player.getX()-1)(game.player.getY()).getBlocking()==false ){
+          if(game.occupied(game.player.getX()-1,game.player.getY())==false ){
             game.player.setX(game.player.getX()-1)
+            game.processDecisions()
             panel.repaint()
           }
         }else if(k == Key.Right){
-          if(game.first_floor.getFloor()(game.player.getX()+1)(game.player.getY()).getBlocking()==false ){
+          if(game.occupied(game.player.getX()+1,game.player.getY())==false ){
             game.player.setX(game.player.getX()+1)
+            game.processDecisions()
             panel.repaint()
           }
         }else{
-          panel.repaint()
+          //panel.repaint()
           println(k+"  "+ k + "\n")
         }
       case MousePressed(_,coord,_,_,_) => 
         //println("clicked")
         vars.setDRAGGING(true)
+      case MouseMoved(_,coord,_) => 
+        var clicked_x = ((coord.getX() -vars.getDX())/(vars.getCURRENT_SIZE().toFloat)).toInt
+        var clicked_y = ((coord.getY() -vars.getDY())/(vars.getCURRENT_SIZE().toFloat)).toInt
+        //println("j'ai cliqué en "+clicked_x+"  "+clicked_y)
+        //println("perso en: "+game.player.getX()+"  "+game.player.getY())
+        if( clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.occupied(clicked_x,clicked_y) ==false && scala.math.abs(clicked_x- game.player.getX())<=1 && scala.math.abs(clicked_y- game.player.getY())<=1){
+          game.mouse_dir = new Position(clicked_x,clicked_y)
+          panel.repaint()
+        }else{
+          game.mouse_dir = null
+          panel.repaint()
+        }
       case MouseClicked(_,coord,_,_,_) => 
         var clicked_x = ((coord.getX() -vars.getDX())/(vars.getCURRENT_SIZE().toFloat)).toInt
         var clicked_y = ((coord.getY() -vars.getDY())/(vars.getCURRENT_SIZE().toFloat)).toInt
         //println("j'ai cliqué en "+clicked_x+"  "+clicked_y)
         //println("perso en: "+game.player.getX()+"  "+game.player.getY())
-        if( game.first_floor.getFloor()(clicked_x)(clicked_y).getBlocking()==false && scala.math.abs(clicked_x- game.player.getX())<=1 && scala.math.abs(clicked_y- game.player.getY())<=1){
+        if( clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.occupied(clicked_x,clicked_y) ==false && scala.math.abs(clicked_x- game.player.getX())<=1 && scala.math.abs(clicked_y- game.player.getY())<=1){
           game.player.setX(clicked_x)
           game.player.setY(clicked_y)
+          game.processDecisions()
           panel.repaint()
         }
 

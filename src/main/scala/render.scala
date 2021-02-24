@@ -3,7 +3,7 @@ package rogue
 import java.awt.{Color,Graphics2D, Graphics}
 
 class Renderer {
-  val tileset_handler = new TileSetHandler(16, "src/main/resources/3_16.png")
+  val tileset_handler = new TileSetHandler(16, "src/main/resources/spritetable.png")
   def getTileSize():Int = {
     return tileset_handler.getSize()
   }
@@ -55,6 +55,24 @@ class Renderer {
       paintCharacter(g, (text.charAt(i)).toInt ,px+i,py,bg,fg,current_size,0,0)
     } 
   }
+  def printLog(g: Graphics2D, matrix_height: Int, current_size: Int){
+    for(i <- 0 to (Log.messages.length-1))
+    {
+      var m = Log.messages(i)
+      for(j <- 0 to (m.sub_messages.length-1)){
+        if(j==0){
+          drawString(g,0, matrix_height-1-i, Color.BLACK, m.sub_messages(j).color, current_size, m.sub_messages(j).text)
+        }else{
+          var delta = 0
+          for(k <- 0 to (j-1)){
+            delta += m.sub_messages(k).text.length
+          }
+          drawString(g,delta, matrix_height-1-i, Color.BLACK, m.sub_messages(j).color, current_size, m.sub_messages(j).text)
+        }
+      }
+      
+    }
+  }
 
   def clearScreen(g: Graphics2D,matrix_width: Int, matrix_height:Int, current_size:Int){
     g.setColor(Color.BLACK);
@@ -86,6 +104,7 @@ class Renderer {
     for(x: Int <- 0 to (floor.getWidth()-1) ){
       for(y: Int <- 0 to (floor.getHeight()-1) ){
         if(game.lineOfSight(player.getX(),player.getY(),x,y)){
+        //if(true){
           floor.getSeen()(x)(y)=1
           floor_grid(x)(y).draw(g,current_size, tileset_handler,dx,dy,x,y)
           //////
@@ -123,13 +142,14 @@ class Renderer {
 
     clearScreen(g, matrix_width, matrix_height, tileset_handler.getSize())
     drawMap(g, current_size, game, dx, dy)
+    //draw monsters
+    game.monsters.foreach( (m: Monster) => if (game.lineOfSight(game.player.rx, game.player.ry, m.rx, m.ry)) m.draw(g, current_size, tileset_handler,dx,dy) )
     game.getPlayer().draw(g,current_size, tileset_handler, dx, dy)
-    drawUI(g, matrix_width, matrix_height, ui_width, ui_height )
-    drawString(g, 0, 44, Color.BLACK, "255255255", tileset_handler.getSize(),"test")    
-    for(i <- 0 to 44){
-      //drawString(g, 0, i, Color.BLACK, "255255255", current_size,i.toString)    
-      g.setColor(Color.WHITE);
-      //g.fillRect(i*current_size,i*current_size, current_size, current_size)
+    if(game.mouse_dir != null){
+        paintCharacter(g, 9, game.mouse_dir.x, game.mouse_dir.y, new Color(1.0f,1.0f,1.0f,0.0f), "240240068", current_size, dx, dy)
     }
+    drawUI(g, matrix_width, matrix_height, ui_width, ui_height )
+    drawString(g, matrix_width-ui_width, 0, Color.BLACK, "255255255", tileset_handler.getSize(),"HP:"+game.player.health+"/"+game.player.max_health)    
+    printLog(g, matrix_height, tileset_handler.getSize)
   }
 }

@@ -68,13 +68,36 @@ abstract class Entity (x: Int, y: Int, sprite: Sprite) {
 }
 
 
-abstract class LivingEntity(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth: Int) extends Entity(x,y,sprite) {
+abstract class LivingEntity(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth_arg: Int, hitChance: Int, hitDamage: Int, name_arg: String, name_color: String) extends Entity(x,y,sprite) {
+  var health = maxHealth_arg
+  val max_health = maxHealth_arg
+  val name = new SubMessage(name_arg,name_color)
+  def attack( attackee: LivingEntity){ 
+    val r = scala.util.Random
+    val attack_try = r.nextInt(100)
+    if(attack_try <= hitChance){
+      attackee.health -= hitDamage
+      Log.addLogMessage( new LogMessage( List(
+        name , new SubMessage(" attacked ", "255255255")
+          , attackee.name , new SubMessage(" for ", "255255255")
+          , new SubMessage( hitDamage.toString, "255000000")
+          , new SubMessage( " damage(s)", "255255255")
+         )
+        )
+      )
+    }else{
+      Log.addLogMessage( new LogMessage( List(
+        name , new SubMessage(" attacked ", "255255255")
+          , attackee.name , new SubMessage(" and missed", "255255255")
+         )
+        )
+      )
+    }
+  }
 }
 
-class Monster(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth: Int, ia: ArtificialIntelligence) extends LivingEntity(x,y,sprite, collidable, maxHealth) {
-}
 
-class Player(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth: Int) extends LivingEntity(x,y,sprite,collidable,maxHealth) {
+class Player(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth: Int, hitChance: Int, hitDamage: Int,name_arg: String,name_color: String) extends LivingEntity(x,y,sprite,collidable,maxHealth,hitChance, hitDamage, name_arg, name_color) {
 }
 
 class Item (x: Int, y: Int, sprite: Sprite, equipable: Boolean, on_the_ground: Boolean) extends Entity(x,y,sprite) {

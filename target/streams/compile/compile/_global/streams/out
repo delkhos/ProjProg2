@@ -1,6 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0m/home/gabrielj/Documents/cours_ENS/1A_ENS_PS/S2/ProjetProg2/Proj/src/main/scala/mainloop.scala:54:44: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : Double[0m
-[0m[[0m[31merror[0m] [0m[0m required: Float[0m
-[0m[[0m[31merror[0m] [0m[0m        val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game))[0m
-[0m[[0m[31merror[0m] [0m[0m                                           ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m

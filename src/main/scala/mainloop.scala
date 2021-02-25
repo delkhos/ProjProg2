@@ -50,21 +50,37 @@ object MainLoopObject{
         var clicked_y = ((coord.getY() -vars.getDY())/(vars.getCURRENT_SIZE().toFloat)).toInt
         //println("j'ai cliqué en "+clicked_x+"  "+clicked_y)
         //println("perso en: "+game.player.getX()+"  "+game.player.getY())
-        if( clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.occupied(clicked_x,clicked_y) ==false && scala.math.abs(clicked_x- game.player.getX())<=1 && scala.math.abs(clicked_y- game.player.getY())<=1){
-          game.mouse_dir = new Position(clicked_x,clicked_y)
+        //println("angle : "+angle)
+        val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game))
+        
+        if( dir != null && clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.occupied(game.player.rx+dir.x,game.player.ry+dir.y) ==false ){
+          //game.mouse_dir = new Position(clicked_x,clicked_y)
+          //panel.repaint()
+          game.mouse_dir =  new Position(game.player.rx+dir.x,game.player.ry+dir.y)
           panel.repaint()
         }else{
           game.mouse_dir = null
           panel.repaint()
         }
+        
       case MouseClicked(_,coord,_,_,_) => 
         var clicked_x = ((coord.getX() -vars.getDX())/(vars.getCURRENT_SIZE().toFloat)).toInt
         var clicked_y = ((coord.getY() -vars.getDY())/(vars.getCURRENT_SIZE().toFloat)).toInt
         //println("j'ai cliqué en "+clicked_x+"  "+clicked_y)
         //println("perso en: "+game.player.getX()+"  "+game.player.getY())
-        if( clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.occupied(clicked_x,clicked_y) ==false && scala.math.abs(clicked_x- game.player.getX())<=1 && scala.math.abs(clicked_y- game.player.getY())<=1){
-          game.player.setX(clicked_x)
-          game.player.setY(clicked_y)
+        if( clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.mouse_dir != null){
+          game.player.setX(game.mouse_dir.x)
+          game.player.setY(game.mouse_dir.y)
+
+          val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game))
+        
+          if( dir != null && clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.occupied(game.player.rx+dir.x,game.player.ry+dir.y) ==false ){
+            //game.mouse_dir = new Position(clicked_x,clicked_y)
+            //panel.repaint()
+            game.mouse_dir =  new Position(game.player.rx+dir.x,game.player.ry+dir.y)
+          }else{
+            game.mouse_dir = null
+          }
           game.processDecisions()
           panel.repaint()
         }
@@ -103,5 +119,38 @@ object MainLoopObject{
         //println("Current resolution : size="+current_size)
       case _ => {}
     }
+  }
+  def get_angle(clicked_x: Int, clicked_y: Int, game: GameObject):Double = {
+    val xa = 5
+    val ya = 0
+    val xb = clicked_x -game.player.rx
+    val yb = clicked_y -game.player.ry
+    if(xb == 0.0 && yb == 0.0){
+      return 1000.0
+    }
+    return scala.math.acos((xa*xb+ya*yb)/(scala.math.sqrt(xa*xa + ya*ya)*scala.math.sqrt(xb*xb+yb*yb)))*180/scala.math.Pi * (if (yb>=0) -1 else 1) + (if (yb>=0) 360 else 0)
+  }
+  def getDirFromAngle(angle: Double): Position ={
+    //println("angle: " , angle)
+    if(angle >= 500){
+      return null
+    }else if(angle <= 22.5 || angle >= 347.5){
+      return new Position(1,0)
+    }else if(angle >= 22.5 && angle <= 77.5){
+      return new Position(1,-1)
+    }else if(angle >= 77.5 && angle <= 122.5){
+      return new Position(0,-1)
+    }else if(angle >= 122.5 && angle <= 167.5){
+      return new Position(-1,-1)
+    }else if(angle >= 167.5 && angle <= 212.5){
+      return new Position(-1,0)
+    }else if(angle >= 212.5 && angle <= 257.5){
+      return new Position(-1,1)
+    }else if(angle >= 257.5 && angle <= 302.5){
+      return new Position(0,1)
+    }else if(angle >= 302.5 && angle <= 347.5){
+      return new Position(1,1)
+    }
+    return null
   }
 }

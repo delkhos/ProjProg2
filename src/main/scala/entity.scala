@@ -95,10 +95,3 @@ abstract class LivingEntity(x: Int, y: Int, sprite: Sprite, collidable: Boolean,
     }
   }
 }
-
-
-class Player(x: Int, y: Int, sprite: Sprite, collidable: Boolean, maxHealth: Int, hitChance: Int, hitDamage: Int,name_arg: String,name_color: String) extends LivingEntity(x,y,sprite,collidable,maxHealth,hitChance, hitDamage, name_arg, name_color) {
-}
-
-class Item (x: Int, y: Int, sprite: Sprite, equipable: Boolean, on_the_ground: Boolean) extends Entity(x,y,sprite) {
-}

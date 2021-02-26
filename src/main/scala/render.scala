@@ -49,14 +49,18 @@ class Renderer {
     g.drawImage(tileset_handler.getColoredTileset(red+green+blue), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
 
   }
+  def min(m:Int, n: Int): Int = {
+    return if (m<=n) m else n
+  }
 
   def drawString(g: Graphics2D, px: Int, py: Int, bg: Color, fg: String, current_size:Int,text: String){
     for(i <- 0 to (text.length()-1)){
       paintCharacter(g, (text.charAt(i)).toInt ,px+i,py,bg,fg,current_size,0,0)
     } 
   }
-  def printLog(g: Graphics2D, matrix_height: Int, current_size: Int){
-    for(i <- 0 to (Log.messages.length-1))
+  def printLog(g: Graphics2D, matrix_height: Int, ui_height: Int, current_size: Int){
+    val n = min(ui_height - 1, Log.messages.length - 1 )
+    for(i <- 0 to n)
     {
       var m = Log.messages(i)
       for(j <- 0 to (m.sub_messages.length-1)){
@@ -134,7 +138,6 @@ class Renderer {
     }
   }
 
-
   def drawGame(g: Graphics2D, current_size: Int, matrix_width: Int, matrix_height: Int, ui_width: Int, ui_height: Int,game: GameObject, dx: Int, dy: Int){
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_OFF)
     g.setRenderingHint(java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION, java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED)
@@ -142,7 +145,8 @@ class Renderer {
 
     clearScreen(g, matrix_width, matrix_height, tileset_handler.getSize())
     drawMap(g, current_size, game, dx, dy)
-    //draw monsters
+    //draw monsters 
+    game.items.foreach( (itm: Item) => if (game.lineOfSight(game.player.rx, game.player.ry, itm.rx, itm.ry)) itm.draw(g, current_size, tileset_handler,dx,dy) )
     game.monsters.foreach( (m: Monster) => if (game.lineOfSight(game.player.rx, game.player.ry, m.rx, m.ry)) m.draw(g, current_size, tileset_handler,dx,dy) )
     game.getPlayer().draw(g,current_size, tileset_handler, dx, dy)
     if(game.mouse_dir != null){
@@ -150,6 +154,6 @@ class Renderer {
     }
     drawUI(g, matrix_width, matrix_height, ui_width, ui_height )
     drawString(g, matrix_width-ui_width, 0, Color.BLACK, "255255255", tileset_handler.getSize(),"HP:"+game.player.health+"/"+game.player.max_health)    
-    printLog(g, matrix_height, tileset_handler.getSize)
+    printLog(g, matrix_height,ui_height, tileset_handler.getSize)
   }
 }

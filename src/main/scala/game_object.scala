@@ -6,10 +6,14 @@ class GameObject(width: Int, height: Int) {
   var first_floor = new MapAutomata(width, height)
   var player = new Player(1, 0, new Sprite( Array[SubSprite](new SubSprite(256,"153051153")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
   var monsters: List[Monster] = List() 
+  var items: List[Item] = List()
   var mouse_dir: Position = null
 
   placePlayer()
   placeMonster(new Goblin(0,0))
+  for(i <- 0 to 20){
+    placeItem(new HealingGoo(0,0))
+  }
 
   def placePlayer(){
     val r = scala.util.Random
@@ -33,6 +37,23 @@ class GameObject(width: Int, height: Int) {
     monster.setX(x)
     monster.setY(y)
     monsters = monster :: monsters
+  }
+  def placeItem(item: Item){
+    val r = scala.util.Random
+    var x = r.nextInt(width)
+    var y = r.nextInt(height)
+    while( occupied_item(x,y)== true ){
+      x = r.nextInt(width)
+      y = r.nextInt(height)
+    }
+    item.setX(x)
+    item.setY(y)
+    items = item :: items
+  }
+  def occupied_item(x: Int, y: Int):Boolean = {
+    return first_floor.getFloor()(x)(y).getBlocking==true || items.exists( (itm: Item)=>{
+      return (x==itm.getX() && y==itm.getY())
+    })
   }
 
 
@@ -159,9 +180,15 @@ class GameObject(width: Int, height: Int) {
   }
 
   def processDecisions(){
+    items.foreach((itm: Item)=> {
+      itm.pickUp(this)
+      }
+    )
+    items = items.filter( itm =>{ println(itm.on_the_ground)
+      itm.on_the_ground == true })
     monsters.foreach((m: Monster)=> {
-        m.processDecision(this)
-        }
-      )
+      m.processDecision(this)
+      }
+    )
   }
 }

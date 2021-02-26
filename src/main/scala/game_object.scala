@@ -160,7 +160,7 @@ class GameObject(width: Int, height: Int) {
     if (deltaX > deltaY)
       return 14 * deltaY + 10 * (deltaX - deltaY);
     return 14 * deltaX + 10 * (deltaY - deltaX);
-}
+  }
 
   def newMap(){
     first_floor = new MapAutomata(width, height)
@@ -178,6 +178,19 @@ class GameObject(width: Int, height: Int) {
       return (x==m.getX() && y==m.getY())
     })
   }
+  
+  def removeDead(monsterlist: List[Monster]): List[Monster] ={
+    monsterlist match{
+      case k::list => {
+        if(k.own_ia.state==State.Dead){
+          return(removeDead(list))
+        }else{
+          return(k::removeDead(list))
+        }
+      }
+      case list => list
+    }
+  }
 
   def processDecisions(){
     items.foreach((itm: Item)=> {
@@ -187,8 +200,15 @@ class GameObject(width: Int, height: Int) {
     items = items.filter( itm =>{ println(itm.on_the_ground)
       itm.on_the_ground == true })
     monsters.foreach((m: Monster)=> {
+<<<<<<< HEAD
+        m.processDecision(this)
+        }
+      )
+    monsters = removeDead(monsters)
+=======
       m.processDecision(this)
       }
     )
+>>>>>>> 2c0fbb623690e33278de35d4dd922c2c9537e4eb
   }
 }

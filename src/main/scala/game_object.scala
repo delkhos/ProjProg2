@@ -195,20 +195,15 @@ class GameObject(width: Int, height: Int) {
   def processDecisions(){
     items.foreach((itm: Item)=> {
       itm.pickUp(this)
-      }
+    }
     )
     items = items.filter( itm =>{ println(itm.on_the_ground)
-      itm.on_the_ground == true })
+    itm.on_the_ground == true })
     monsters.foreach((m: Monster)=> {
-<<<<<<< HEAD
         m.processDecision(this)
-        }
-      )
-    monsters = removeDead(monsters)
-=======
-      m.processDecision(this)
-      }
+    }
     )
->>>>>>> 2c0fbb623690e33278de35d4dd922c2c9537e4eb
+    monsters = removeDead(monsters)
   }
 }
+

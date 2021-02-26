@@ -18,9 +18,9 @@ abstract class Item (x: Int, y: Int, sprite: Sprite, arg_equipable: Boolean, nam
 
 class HealingGoo (x: Int, y: Int) extends Item (
   x,y,
-  new Sprite( Array[SubSprite](new SubSprite(15,"240060060")) , new Color(1.0f,1.0f,1.0f,0.0f)),
+  new Sprite( Array[SubSprite](new SubSprite(15,"000255000")) , new Color(1.0f,1.0f,1.0f,0.0f)),
   false,
   "healing goo",
-  "220030000"){
+  "000255000"){
   }
 

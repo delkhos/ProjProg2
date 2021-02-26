@@ -19,85 +19,24 @@ object MainLoopObject{
             game.player.setY(game.player.getY()-1)
             game.processDecisions()
             panel.repaint()
-          }else{ 
-            var monsteropt = game.monsters.find(m => (m.rx==game.player.getX()-1 && m.ry == game.player.getY()))
-            monsteropt match{
-              case Some(targetMonster) => {
-                game.player.attack(targetMonster)
-                if (targetMonster.health<0) {
-                  targetMonster.own_ia.state = State.Dead
-                  Log.addLogMessage( new LogMessage( List( targetMonster.name , new SubMessage(" died.", "255255255"))))
-                }
-                game.processDecisions()
-                panel.repaint()
-              
-              }
-              case None => {}
-            }
           }
         }else if(k == Key.Down){
           if(game.occupied(game.player.getX(),game.player.getY()+1)==false ){
             game.player.setY(game.player.getY()+1)
             game.processDecisions()
             panel.repaint()
-          }else{ 
-            var monsteropt = game.monsters.find(m => (m.rx==game.player.getX() && m.ry == game.player.getY()+1))
-            monsteropt match{
-              case Some(targetMonster) => {
-                game.player.attack(targetMonster)
-                if (targetMonster.health<0) {
-                  targetMonster.own_ia.state = State.Dead
-                  Log.addLogMessage( new LogMessage( List( targetMonster.name , new SubMessage(" died.", "255255255"))))
-                }
-                game.processDecisions()
-                panel.repaint()
-              
-              }
-              case None => {}
-            }
           }
         }else if(k == Key.Left){
           if(game.occupied(game.player.getX()-1,game.player.getY())==false ){
             game.player.setX(game.player.getX()-1)
             game.processDecisions()
             panel.repaint()
-          }else{ 
-            var monsteropt = game.monsters.find(m => (m.rx==game.player.getX()-1 && m.ry == game.player.getY()))
-            monsteropt match{
-              case Some(targetMonster) => {
-                game.player.attack(targetMonster)
-                if (targetMonster.health<0) {
-                  targetMonster.own_ia.state = State.Dead
-                  Log.addLogMessage( new LogMessage( List( targetMonster.name , new SubMessage(" died.", "255255255"))))
-                }
-                game.processDecisions()
-                panel.repaint()
-              
-              }
-              case None => {}
-            }
           }
-
         }else if(k == Key.Right){
           if(game.occupied(game.player.getX()+1,game.player.getY())==false ){
             game.player.setX(game.player.getX()+1)
             game.processDecisions()
             panel.repaint()
-          }
-          else{ 
-            var monsteropt = game.monsters.find(m => (m.rx==game.player.getX()+1 && m.ry == game.player.getY()))
-            monsteropt match{
-              case Some(targetMonster) => {
-                game.player.attack(targetMonster)
-                if (targetMonster.health<0) {
-                  targetMonster.own_ia.state = State.Dead
-                  Log.addLogMessage( new LogMessage( List( targetMonster.name , new SubMessage(" died.", "255255255"))))
-                }
-                game.processDecisions()
-                panel.repaint()
-              }
-              case None => {}
-            }
           }
         }else{
           //panel.repaint()

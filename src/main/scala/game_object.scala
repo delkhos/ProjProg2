@@ -2,15 +2,9 @@ package rogue
 
 import java.awt.{Color,Graphics2D, Graphics}
 
-<<<<<<< HEAD
 class GameObject(dim: Dimension) { 
   var first_floor = new MapAutomata(dim)
   var player = new Player(Origin, new Sprite( Array[SubSprite](new SubSprite(2,"153051153")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
-=======
-class GameObject(width: Int, height: Int) { 
-  var first_floor = new MapAutomata(width, height)
-  var player = new Player(1, 0, new Sprite( Array[SubSprite](new SubSprite(256,"051204255")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
->>>>>>> e423417a8da2f9c1785f9af0e1de339bdf4d4bfa
   var monsters: List[Monster] = List() 
   var items: List[Item] = List()
   var mouse_dir: Position = null
@@ -188,7 +182,6 @@ class GameObject(width: Int, height: Int) {
       itm.pickUp(this)
     }
     )
-<<<<<<< HEAD
     // filtering items that are not on the ground
     items = items.filter( itm =>{ 
       itm.on_the_ground == true })
@@ -198,15 +191,6 @@ class GameObject(width: Int, height: Int) {
       )
     // filtering dead monsters
     monsters = monsters.filter( m => m.state!=State.Dead)
-=======
-    items = items.filter( itm =>{ println(itm.on_the_ground)
-    itm.on_the_ground == true })
-    monsters.foreach((m: Monster)=> {
-        m.processDecision(this)
-    }
-    )
-    monsters = removeDead(monsters)
->>>>>>> e423417a8da2f9c1785f9af0e1de339bdf4d4bfa
   }
 }
 

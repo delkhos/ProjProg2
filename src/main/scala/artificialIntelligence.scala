@@ -3,7 +3,6 @@ package rogue
 import scala.math.abs
 
 abstract class ArtificialIntelligence(){
-  var state = State.Idle
   def processDecision(game: GameObject, monster: Monster){
   }
 }
@@ -15,34 +14,34 @@ object State{
   val Attacking = 2
 }
 
-class GoblinIA extends ArtificialIntelligence(){
+class IdleChaseIA extends ArtificialIntelligence(){
   var lastPlayerSeenPosition: Position = null
-  override def processDecision(game: GameObject , goblin: Monster){
-    if(state != State.Dead){
-      println(goblin + " position = " + goblin.rx + " " + goblin.ry)
-      if(game.lineOfSight(goblin.rx,goblin.ry,game.player.rx,game.player.ry)){
-        if(abs(goblin.rx-game.player.rx) <= 1 && abs(goblin.ry-game.player.ry)<=1){ 
-          state = State.Attacking
+  override def processDecision(game: GameObject , monster: Monster){
+    if(monster.state != State.Dead){
+      println(monster + " " + monster.pos.x + " " + monster.pos.y)
+      if(game.lineOfSight(monster.pos,game.player.pos)){
+        if(abs(monster.pos.x-game.player.pos.x) <= 1 && abs(monster.pos.y-game.player.pos.y)<=1){ 
+          monster.state = State.Attacking
         }else{
-          lastPlayerSeenPosition = new Position(game.player.rx, game.player.ry)
-          if(state == State.Idle){
+          lastPlayerSeenPosition = new Position(game.player.pos.x, game.player.pos.y)
+          if(monster.state == State.Idle){
             Log.addLogMessage( new LogMessage( List(
-              goblin.name , new SubMessage(" spotted ", "255255255")
+              monster.name , new SubMessage(" spotted ", "255255255")
                 , game.player.name )
               )
             )
           }
-          state = State.Chasing
+          monster.state = State.Chasing
         }
-      }else if(lastPlayerSeenPosition != null && goblin.rx==lastPlayerSeenPosition.x && goblin.ry == lastPlayerSeenPosition.y){
-        state = State.Idle
+        }else if(lastPlayerSeenPosition != null && monster.pos== lastPlayerSeenPosition){
+        monster.state = State.Idle
       }
-      if(state == State.Idle){
+      if(monster.state == State.Idle){
         var nextPositions = List((1,1),(1,0),(1,-1),(-1,0),(-1,1),(-1,-1),(0,1),(0,-1))
         val r = scala.util.Random
         var i = r.nextInt(nextPositions.length)
         var delta = nextPositions(i)
-        while( game.occupied(goblin.getX()+delta._1, goblin.getY()+delta._2) )
+        while( game.occupied(monster.pos.translate(delta._1,delta._2)) )
         {
           nextPositions = nextPositions.take(i) ++ nextPositions.drop(i + 1)
           i = r.nextInt(nextPositions.length)
@@ -50,19 +49,17 @@ class GoblinIA extends ArtificialIntelligence(){
         }
         // vérifier le cas où il ne peut pas bouger du tout 
         if(nextPositions.length == 0){
-          //println(goblin+"cannot move")
+          //println(monster+"cannot move")
       
         }else{
-          goblin.setX(goblin.getX + delta._1)
-          goblin.setY(goblin.getY + delta._2)
+          monster.pos = monster.pos.translate(delta._1, delta._2)
         }
-      }else if(state==State.Chasing){
-        var path = game.a_star_path(goblin.rx,goblin.ry, lastPlayerSeenPosition.x,lastPlayerSeenPosition.y)
-        goblin.rx = path(0).x
-        goblin.ry = path(0).y
-      }else if(state==State.Attacking){
+      }else if(monster.state==State.Chasing){
+        var path = game.a_star_path(monster.pos, lastPlayerSeenPosition)
+        monster.pos = path(0)
+      }else if(monster.state==State.Attacking){
         //println("attacking not yet implemented")
-        goblin.attack(game.player)
+        monster.attack(game.player)
       }
     }
   }

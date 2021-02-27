@@ -23,11 +23,11 @@ class Environment(sprite: Sprite, blocking: Boolean) extends{
   def getBlocking(): Boolean = {
     return blocking
   }
-  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dx: Int, dy: Int,rx: Int, ry: Int){
+  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dpos: DPosition, pos: Position){
     g.setColor(sprite.getBgColor());
     val size:Float = current_size
-    val sx1:Float = (rx)*size +dx //-rx
-    val sy1:Float = (ry)*size + dy //-ry 
+    val sx1:Float = (pos.x)*size +dpos.x //-rx
+    val sy1:Float = (pos.y)*size + dpos.y //-ry 
     val sx2:Float = sx1 + (size)
     val sy2:Float = sy1 + (size)
     g.fillRect(sx1.toInt,sy1.toInt, current_size, current_size)
@@ -44,12 +44,12 @@ class Environment(sprite: Sprite, blocking: Boolean) extends{
       g.drawImage(tileset_handler.getColoredTileset(elements(i).getColor()), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
     }
   }
-  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dx: Int, dy: Int,rx: Int, ry:Int,  ratio: Double){
+  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dpos: DPosition, pos: Position,  ratio: Double){
     val bg = sprite.getBgColor()
     g.setColor(new Color( (bg.getRed() * ratio).toInt , (bg.getGreen() * ratio).toInt, (bg.getBlue() * ratio).toInt    ));
     val size:Float = current_size
-    val sx1:Float = (rx)*size +dx //-rx
-    val sy1:Float = (ry)*size + dy //-ry 
+    val sx1:Float = (pos.x)*size +dpos.x //-rx
+    val sy1:Float = (pos.y)*size + dpos.y //-ry 
     val sx2:Float = sx1 + (size)
     val sy2:Float = sy1 + (size)
     g.fillRect(sx1.toInt,sy1.toInt, current_size, current_size)
@@ -84,7 +84,7 @@ object Empty extends Environment(
 }
 
 object EmptyField extends Environment(
-  new Sprite(Array[SubSprite](new SubSprite(258,Field.getMainColor())) ,Color.BLACK)
+  new Sprite(Array[SubSprite](new SubSprite(250,Field.getMainColor())) ,Color.BLACK)
   , false) {
 }
 

@@ -1,0 +1,8 @@
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(gitu, Some(e9285341-37fc-4334-b0ae-02de14bf9abf), Some(CommandSource(console0)))[0m
+[0m[[0m[31merror[0m] [0m[0mNot a valid command: gitu (similar: exit)[0m
+[0m[[0m[31merror[0m] [0m[0mNot a valid project ID: gitu[0m
+[0m[[0m[31merror[0m] [0m[0mExpected ':'[0m
+[0m[[0m[31merror[0m] [0m[0mNot a valid key: gitu (similar: bgList, turbo, bgRun)[0m
+[0m[[0m[31merror[0m] [0m[0mgitu[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m

@@ -5,9 +5,29 @@ class Position(arg_x:Int , arg_y: Int){
   var y = arg_y
   def canEqual(a: Any) = a.isInstanceOf[Position]
 
+  def translate(dx: Int, dy: Int): Position = {
+    return new Position(x+dx,y+dy)
+  }
+
   override def equals(that: Any): Boolean =
     that match {
       case that: Position => that.x == x && that.y == y
+      case _ => false
+  }
+
+}
+class DPosition(arg_x:Float , arg_y: Float){
+  var x = arg_x
+  var y = arg_y
+  def canEqual(a: Any) = a.isInstanceOf[DPosition]
+
+  def translate(dx: Float, dy: Float): DPosition = {
+    return new DPosition(x+dx,y+dy)
+  }
+
+  override def equals(that: Any): Boolean =
+    that match {
+      case that: DPosition => that.x == x && that.y == y
       case _ => false
   }
 
@@ -18,3 +38,10 @@ class PositionPath(arg_x:Int , arg_y: Int, arg_parent: PositionPath, arg_gcost: 
   var parent = arg_parent
 
 }
+
+object Origin extends Position(0,0)
+{}
+object DOrigin extends DPosition(0.0f,0.0f)
+{}
+
+

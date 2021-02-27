@@ -5,29 +5,26 @@ import swing._
 import java.awt.event.KeyEvent
 
 object MainLoopObject{
-  def mainLoop(panel:GamePanel, vars:MainLoopVars, renderer: Renderer, game: GameObject, e: Event, game_matrix_width: Int, game_matrix_height: Int){
+  def mainLoop(panel:GamePanel, vars:MainLoopVars, renderer: Renderer, game: GameObject, e: Event, game_matrix_dim: Dimension, matrix_dim: Dimension,ui_dim: Dimension){
     e match {
       case KeyPressed(_,k,_,_) => 
+        game.mouse_dir = null
         if(k == Key.Asterisk){
-          vars.setCURRENT_SIZE(renderer.getTileSize())
-          vars.setDX(0)
-          vars.setDY(0)
+          vars.current_size = renderer.getTileSize()
+          vars.dpos.x = 0.0f
+          vars.dpos.y = 0.0f
           panel.repaint()
-          println("Current resolution : size="+vars.getCURRENT_SIZE())
+          println("Current resolution : size="+vars.current_size)
         }else if(k == Key.Up){
-          if(game.occupied(game.player.getX(),game.player.getY()-1)==false ){
-            game.player.setY(game.player.getY()-1)
+          if(game.occupied(game.player.pos.translate(0,-1))==false ){
+            game.player.pos.y += -1
             game.processDecisions()
             panel.repaint()
           }else{ 
-            var monsteropt = game.monsters.find(m => (m.rx==game.player.getX()-1 && m.ry == game.player.getY()))
+            var monsteropt = game.monsters.find(m => (m.pos == game.player.pos.translate(0,-1)))
             monsteropt match{
               case Some(targetMonster) => {
                 game.player.attack(targetMonster)
-                if (targetMonster.health<0) {
-                  targetMonster.own_ia.state = State.Dead
-                  Log.addLogMessage( new LogMessage( List( targetMonster.name , new SubMessage(" died.", "255255255"))))
-                }
                 game.processDecisions()
                 panel.repaint()
               
@@ -36,19 +33,15 @@ object MainLoopObject{
             }
           }
         }else if(k == Key.Down){
-          if(game.occupied(game.player.getX(),game.player.getY()+1)==false ){
-            game.player.setY(game.player.getY()+1)
+          if(game.occupied(game.player.pos.translate(0,1))==false ){
+            game.player.pos.y += 1
             game.processDecisions()
             panel.repaint()
           }else{ 
-            var monsteropt = game.monsters.find(m => (m.rx==game.player.getX() && m.ry == game.player.getY()+1))
+            var monsteropt = game.monsters.find(m => (m.pos == game.player.pos.translate(0,1)))
             monsteropt match{
               case Some(targetMonster) => {
                 game.player.attack(targetMonster)
-                if (targetMonster.health<0) {
-                  targetMonster.own_ia.state = State.Dead
-                  Log.addLogMessage( new LogMessage( List( targetMonster.name , new SubMessage(" died.", "255255255"))))
-                }
                 game.processDecisions()
                 panel.repaint()
               
@@ -57,19 +50,15 @@ object MainLoopObject{
             }
           }
         }else if(k == Key.Left){
-          if(game.occupied(game.player.getX()-1,game.player.getY())==false ){
-            game.player.setX(game.player.getX()-1)
+          if(game.occupied(game.player.pos.translate(-1,0))==false ){
+            game.player.pos.x += -1
             game.processDecisions()
             panel.repaint()
           }else{ 
-            var monsteropt = game.monsters.find(m => (m.rx==game.player.getX()-1 && m.ry == game.player.getY()))
+            var monsteropt = game.monsters.find(m => (m.pos == game.player.pos.translate(-1,0)))
             monsteropt match{
               case Some(targetMonster) => {
                 game.player.attack(targetMonster)
-                if (targetMonster.health<0) {
-                  targetMonster.own_ia.state = State.Dead
-                  Log.addLogMessage( new LogMessage( List( targetMonster.name , new SubMessage(" died.", "255255255"))))
-                }
                 game.processDecisions()
                 panel.repaint()
               
@@ -79,102 +68,127 @@ object MainLoopObject{
           }
 
         }else if(k == Key.Right){
-          if(game.occupied(game.player.getX()+1,game.player.getY())==false ){
-            game.player.setX(game.player.getX()+1)
+          if(game.occupied(game.player.pos.translate(1,0))==false ){
+            game.player.pos.x += 1
             game.processDecisions()
             panel.repaint()
           }
           else{ 
-            var monsteropt = game.monsters.find(m => (m.rx==game.player.getX()+1 && m.ry == game.player.getY()))
+            var monsteropt = game.monsters.find(m => (m.pos == game.player.pos.translate(1,0)))
             monsteropt match{
               case Some(targetMonster) => {
                 game.player.attack(targetMonster)
-                if (targetMonster.health<0) {
-                  targetMonster.own_ia.state = State.Dead
-                  Log.addLogMessage( new LogMessage( List( targetMonster.name , new SubMessage(" died.", "255255255"))))
-                }
                 game.processDecisions()
                 panel.repaint()
               }
               case None => {}
             }
           }
+        }else if(k == Key.W){
+          game.player.waitAction
+          game.processDecisions()
+          panel.repaint()
         }else{
           //panel.repaint()
           println(k+"  "+ k + "\n")
         }
       case MousePressed(_,coord,_,_,_) => 
         //println("clicked")
-        vars.setDRAGGING(true)
+        vars.dragging = true
       case MouseMoved(_,coord,_) => 
-        var clicked_x = ((coord.getX() -vars.getDX())/(vars.getCURRENT_SIZE().toFloat)).toInt
-        var clicked_y = ((coord.getY() -vars.getDY())/(vars.getCURRENT_SIZE().toFloat)).toInt
-        //println("j'ai cliqué en "+clicked_x+"  "+clicked_y)
+        var clicked_x = ((coord.x -vars.dpos.x)/(vars.current_size.toFloat)).toInt
+        var clicked_y = ((coord.y -vars.dpos.y)/(vars.current_size.toFloat)).toInt
         //println("perso en: "+game.player.getX()+"  "+game.player.getY())
         //println("angle : "+angle)
         val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game))
         
-        if( dir != null && clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.occupied(game.player.rx+dir.x,game.player.ry+dir.y) ==false ){
-          //game.mouse_dir = new Position(clicked_x,clicked_y)
-          //panel.repaint()
-          game.mouse_dir =  new Position(game.player.rx+dir.x,game.player.ry+dir.y)
+        if( dir != null && clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && game.occupied(game.player.pos.translate(dir.x,dir.y)) ==false ){
+          game.mouse_dir = game.player.pos.translate(dir.x,dir.y)
+          game.attack_dir = game.player.pos.translate(dir.x,dir.y)
+          panel.repaint()
+        }else if(dir != null){
+          game.mouse_dir = null
+          game.attack_dir = game.player.pos.translate(dir.x,dir.y)
           panel.repaint()
         }else{
           game.mouse_dir = null
-          panel.repaint()
+          game.attack_dir = null
         }
         
       case MouseClicked(_,coord,_,_,_) => 
-        var clicked_x = ((coord.getX() -vars.getDX())/(vars.getCURRENT_SIZE().toFloat)).toInt
-        var clicked_y = ((coord.getY() -vars.getDY())/(vars.getCURRENT_SIZE().toFloat)).toInt
-        //println("j'ai cliqué en "+clicked_x+"  "+clicked_y)
-        //println("perso en: "+game.player.getX()+"  "+game.player.getY())
-        if( clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.mouse_dir != null){
-          game.player.setX(game.mouse_dir.x)
-          game.player.setY(game.mouse_dir.y)
+        var clicked_x = ((coord.x -vars.dpos.x)/(vars.current_size.toFloat)).toInt
+        var clicked_y = ((coord.y -vars.dpos.y)/(vars.current_size.toFloat)).toInt
 
-          val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game))
-        
-          if( dir != null && clicked_x < game.first_floor.getWidth() && clicked_y < game.first_floor.getHeight() && game.occupied(game.player.rx+dir.x,game.player.ry+dir.y) ==false ){
-            //game.mouse_dir = new Position(clicked_x,clicked_y)
-            //panel.repaint()
-            game.mouse_dir =  new Position(game.player.rx+dir.x,game.player.ry+dir.y)
-          }else{
-            game.mouse_dir = null
+        var ui_clicked_x = ((coord.x -vars.dpos.x)/(renderer.tileset_handler.getSize().toFloat)).toInt
+        var ui_clicked_y = ((coord.y -vars.dpos.y)/(renderer.tileset_handler.getSize().toFloat)).toInt
+        val istart = (matrix_dim.width-ui_dim.width)
+        val iend = (matrix_dim.width-1)
+        val jstart = (matrix_dim.height-ui_dim.height-1-(game.player.inventory.size/(ui_dim.width-2)+1)-1)
+        val jend = (matrix_dim.height-ui_dim.height-1)
+        val inventory_coord = ui_clicked_x-(istart+1)+(ui_clicked_y-(jstart+1))*(iend-istart-1)
+
+        if( clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && (game.mouse_dir != null || game.attack_dir != null)){
+          //println("attack_dir = " + game.attack_dir.x + " " + game.attack_dir.y)
+          var monsteropt = game.monsters.find(m => (m.pos == game.attack_dir))
+          monsteropt match{
+            case Some(targetMonster) => {
+              game.player.attack(targetMonster)
+              game.processDecisions()
+              panel.repaint()
+            }
+            case None => {
+              game.player.pos.x = game.mouse_dir.x
+              game.player.pos.y = game.mouse_dir.y
+              game.processDecisions()
+              panel.repaint()
+            }
+
+            val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game))
+          
+            if( dir != null && clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && game.occupied(game.player.pos.translate(dir.x,dir.y)) ==false ){
+              game.mouse_dir =  game.player.pos.translate(dir.x,dir.y)
+              game.attack_dir = game.player.pos.translate(dir.x,dir.y)
+            }else if(dir != null){
+              game.mouse_dir = null
+              game.attack_dir = game.player.pos.translate(dir.x,dir.y)
+            }else{
+              game.mouse_dir = null
+              game.attack_dir = null
+            }
           }
+        }else if(inventory_coord>= 0 && inventory_coord < game.player.inventory.size && game.player.inventory.contents(inventory_coord) != null){
+          game.player.inventory.contents(inventory_coord).use(game)
           game.processDecisions()
           panel.repaint()
         }
 
       case MouseDragged(_,coord,_) => 
-        val sx2 = coord.getX()
-        val sy2 = coord.getY()
+        val sx2 = coord.x
+        val sy2 = coord.y
         //println("resolving DRAG")
-        if(vars.getDRAGGING()){
+        if(vars.dragging){
           //println("first grab OK")
-          vars.setSX(sx2)
-          vars.setSY(sy2)
-          vars.setDRAGGING(false)
+          vars.spos.x = sx2
+          vars.spos.y = sy2
+          vars.dragging = false
         }
-        vars.setDX(vars.getDX() + (sx2-vars.getSX())) 
-        vars.setDY(vars.getDY() + (sy2-vars.getSY())) 
+        vars.dpos.x +=  sx2-vars.spos.x 
+        vars.dpos.y +=  sy2-vars.spos.y
         //println("dragging dsx= "+(sx2-sx).toInt+"  "+(sy2-sy).toInt)
-        vars.setSX(sx2)
-        vars.setSY(sy2)
-        vars.setPOSX_CENTER((renderer.getTileSize()*game_matrix_width/2 -vars.getDX())/(vars.getCURRENT_SIZE().toFloat))
-        vars.setPOSY_CENTER((renderer.getTileSize()*game_matrix_height/2 -vars.getDY())/(vars.getCURRENT_SIZE().toFloat))
+        vars.spos.x = sx2
+        vars.spos.y = sy2
+        vars.center_pos.x = (renderer.getTileSize()*game_matrix_dim.width/2 -vars.dpos.x)/(vars.current_size.toFloat)
+        vars.center_pos.y = (renderer.getTileSize()*game_matrix_dim.height/2 -vars.dpos.y)/(vars.current_size.toFloat)
         panel.repaint()
       case MouseReleased(_,coord,_,_,_) => 
-        vars.setDRAGGING(false)
-        //println("La position centrale= "+((renderer.getTileSize()*game_matrix_width/2 -dx)/(current_size.toFloat))+" "+((renderer.getTileSize()*game_matrix_height/2 - dy )/(current_size.toFloat)))
+        vars.dragging = false
       case MouseWheelMoved(_,coord,_,n) =>
-        val old = vars.getCURRENT_SIZE()
-        vars.setCURRENT_SIZE(old+n)
-        if(vars.getCURRENT_SIZE()<renderer.getTileSize()){
-          vars.setCURRENT_SIZE(renderer.getTileSize())
+        val old = vars.current_size
+        vars.current_size = old+n
+        if(vars.current_size<renderer.getTileSize()){
+          vars.current_size = renderer.getTileSize()
         }else{
-          vars.setDX(vars.getDX() - n*vars.getPOSX_CENTER())
-          vars.setDY(vars.getDY() - n*vars.getPOSY_CENTER())
+          vars.dpos = vars.dpos.translate(- n*vars.center_pos.x, - n*vars.center_pos.y)
         }
         panel.repaint()
         //println("Current resolution : size="+current_size)
@@ -184,8 +198,8 @@ object MainLoopObject{
   def get_angle(clicked_x: Int, clicked_y: Int, game: GameObject):Double = {
     val xa = 5
     val ya = 0
-    val xb = clicked_x -game.player.rx
-    val yb = clicked_y -game.player.ry
+    val xb = clicked_x -game.player.pos.x
+    val yb = clicked_y -game.player.pos.y
     if(xb == 0.0 && yb == 0.0){
       return 1000.0
     }

@@ -2,9 +2,10 @@ package rogue
 
 import util.control.Breaks._
 
-class Map(width: Int, height: Int){
-  var floor = Array.ofDim[Environment](width,height)
-  var hasBeenSeen = Array.ofDim[Int](width,height) 
+class Map(dim_arg: Dimension){
+  var dim= dim_arg
+  var floor = Array.ofDim[Environment](dim.width,dim.height)
+  var hasBeenSeen = Array.ofDim[Int](dim.width,dim.height) 
   
   def getFloor(): Array[Array[Environment]] = {
     return floor
@@ -13,19 +14,13 @@ class Map(width: Int, height: Int){
   def getSeen(): Array[Array[Int]] = {
     return hasBeenSeen
   }
-  def getWidth(): Int = {
-    return width
-  }
-  def getHeight(): Int = {
-    return height
-  }
   
 }
 
-class MapAutomata(width: Int, height: Int) extends Map(width,height){
-  var floor2 = Array.ofDim[Environment](width,height)
-  var floor3 = Array.ofDim[Int](width,height)
-  var biomeMap = Array.ofDim[Biome](width,height)
+class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
+  var floor2 = Array.ofDim[Environment](dim.width,dim.height)
+  var floor3 = Array.ofDim[Int](dim.width,dim.height)
+  var biomeMap = Array.ofDim[Biome](dim.width,dim.height)
 
   val r = scala.util.Random
   val initial_wall_chance = 40
@@ -49,25 +44,22 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   }
 
   def initBiomeMap () {
-    for (x<- 0 to  (width-1)){
-      for (y<- 0 to (height-1)){
+    for (x<- 0 to  (dim.width-1)){
+      for (y<- 0 to (dim.height-1)){
         biomeMap(x)(y) = Neutral
       }
     }
   }
 
-
-
-
   def oneGen():Boolean = {
     var continue = false
-    for(x <- 0 to (width-1) ){
-      for(y <- 0 to (height-1) ){
+    for(x <- 0 to (dim.width-1) ){
+      for(y <- 0 to (dim.height-1) ){
         var count1 = 0
         for(i <- -1 to 1){
           for(j <- -1 to 1){
             if(i==0 && j==0){
-            }else if(x+i<0 || (x+i)>=width  || (y+j)<0 || (y+j)>=height){
+            }else if(x+i<0 || (x+i)>=dim.width  || (y+j)<0 || (y+j)>=dim.height){
               count1+=1
             }else if(floor(x+i)(y+j)==Granite){
               count1+=1
@@ -91,8 +83,8 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
         }
       }
     }
-    for(x <- 0 to (width-1) ){
-      for(y <- 0 to (height-1) ){
+    for(x <- 0 to (dim.width-1) ){
+      for(y <- 0 to (dim.height-1) ){
           floor(x)(y) = floor2(x)(y)
       }
     }
@@ -100,8 +92,8 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   }
 
   def generate() {
-    for(x: Int <- 0 to (width-1) ){
-      for(y: Int <- 0 to (height-1) ){
+    for(x: Int <- 0 to (dim.width-1) ){
+      for(y: Int <- 0 to (dim.height-1) ){
         if(r.nextInt(100)<initial_wall_chance){
           floor(x)(y)=Granite
         }else{
@@ -113,16 +105,16 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     while(oneGen() && k < 50 ){
       k+=1
     }
-    for(y: Int <- 0 to (height-1) ){
+    for(y: Int <- 0 to (dim.height-1) ){
         floor(0)(y) = Granite
-        floor(width-1)(y) = Granite
+        floor(dim.width-1)(y) = Granite
     }
-    for(x: Int <- 0 to (width-1) ){
+    for(x: Int <- 0 to (dim.width-1) ){
         floor(x)(0) = Granite
-        floor(x)(height-1) = Granite
+        floor(x)(dim.height-1) = Granite
     }
-    for(x<- 0 to (width-1) ){
-      for(y: Int <- 0 to (height-1) ){
+    for(x<- 0 to (dim.width-1) ){
+      for(y: Int <- 0 to (dim.height-1) ){
           floor2(x)(y) = floor(x)(y)
       }
     }
@@ -141,8 +133,8 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   }
 
   def testConnexity(free: Int):Boolean = {
-    for(x <- 0 to (width-1) ){
-      for(y <- 0 to (height-1) ){
+    for(x <- 0 to (dim.width-1) ){
+      for(y <- 0 to (dim.height-1) ){
         floor3(x)(y) = if (floor(x)(y)==Granite) 1 else 0
       }
     }
@@ -150,9 +142,9 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     var i = 1
     var stop = false
 
-    while(i <= (width-2) && !stop ){
+    while(i <= (dim.width-2) && !stop ){
       var j = 1
-      while(j <= (height-2)  && !stop){ 
+      while(j <= (dim.height-2)  && !stop){ 
         //println("pouring at: "+i+"  "+j)
         val pour_value = pouring(i,j)
         if(pour_value!=free && pour_value!=0){
@@ -189,9 +181,9 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     // using bucket pour method
     var i = 1
     var stop = false
-    while(i <= (width-2) && !stop ){
+    while(i <= (dim.width-2) && !stop ){
       var j = 1
-      while(j <= (height-2)  && !stop){ 
+      while(j <= (dim.height-2)  && !stop){ 
         val pour_value = pouringRoom(i,j,room_number,biome)
         if(pour_value!=free && pour_value!=0){
           //println("non connexe avec le noeud : "+i+"  "+j)
@@ -204,16 +196,16 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     return !stop
   }
   def getAllRooms():Int = {
-    for(x <- 0 to (width-1) ){
-      for(y <- 0 to (height-1) ){
+    for(x <- 0 to (dim.width-1) ){
+      for(y <- 0 to (dim.height-1) ){
         floor3(x)(y) = if (floor(x)(y)==Granite) 1 else 0
         //floor2(x)(y) = floor(x)(y)
       }
     }
     var biome: Biome = intToBiome(r.nextInt(4))
     var free = 0
-    for(x <- 0 to (width-1) ){
-      for(y <- 0 to (height-1) ){ 
+    for(x <- 0 to (dim.width-1) ){
+      for(y <- 0 to (dim.height-1) ){ 
         if(floor3(x)(y)!=1){
           free += 1
         }
@@ -225,8 +217,8 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
       biome = intToBiome(r.nextInt(4))
       println("the chosen biome is "+ biome)
       free = 0
-      for(x <- 0 to (width-1) ){
-        for(y <- 0 to (height-1) ){ 
+      for(x <- 0 to (dim.width-1) ){
+        for(y <- 0 to (dim.height-1) ){ 
           if(floor3(x)(y)==1){
             free += 1
           }
@@ -243,11 +235,11 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
     var tx2 = 0 
     var ty2 = 0
     var alongX = true
-    for(x1 <- 0 to (width-1) ){
-      for(y1 <- 0 to (height-1) ){
+    for(x1 <- 0 to (dim.width-1) ){
+      for(y1 <- 0 to (dim.height-1) ){
         if(floor3(x1)(y1) == 1 && floor(x1)(y1)==Empty){
-          for(x2 <- 0 to (width-1) ){
-            for(y2 <- 0 to (height-1) ){
+          for(x2 <- 0 to (dim.width-1) ){
+            for(y2 <- 0 to (dim.height-1) ){
               if((x1!=x2 || y1!=y2) && (x1==x2 || y1==y2) && floor3(x2)(y2)>1)
               {
                 var d = 0
@@ -312,8 +304,8 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
   def generateConnexRandom(){
     generate()
     var free = 0
-    for(x <- 0 to (width-1) ){
-      for(y <- 0 to (height-1) ){ 
+    for(x <- 0 to (dim.width-1) ){
+      for(y <- 0 to (dim.height-1) ){ 
         if(floor(x)(y)!=Granite){
           free += 1
         }
@@ -337,8 +329,8 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
 
   
   def applyBiomes(){
-    for (x: Int <- 0 to (width-1)){
-      for (y: Int <- 0 to (height-1)){
+    for (x: Int <- 0 to (dim.width-1)){
+      for (y: Int <- 0 to (dim.height-1)){
         if (floor(x)(y) == Empty){
           floor(x)(y) = biomeMap(x)(y) match{
             case Field => EmptyField
@@ -357,7 +349,7 @@ class MapAutomata(width: Int, height: Int) extends Map(width,height){
 
 }
 /*
-class MapPolygon(width: Int, height: Int, sides:Int, radius: Int, rotation: Double) extends Map(width,height){
+class MapPolygon(dim.width: Int, dim.height: Int, sides:Int, radius: Int, rotation: Double) extends Map(dim.width,height){
   val rot = rotation*(scala.math.Pi / 180.0)
 
   val rchange: Double = (scala.math.Pi * 2.0) / sides

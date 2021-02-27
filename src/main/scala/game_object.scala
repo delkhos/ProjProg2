@@ -2,68 +2,66 @@ package rogue
 
 import java.awt.{Color,Graphics2D, Graphics}
 
-class GameObject(width: Int, height: Int) { 
-  var first_floor = new MapAutomata(width, height)
-  var player = new Player(1, 0, new Sprite( Array[SubSprite](new SubSprite(256,"153051153")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
+class GameObject(dim: Dimension) { 
+  var first_floor = new MapAutomata(dim)
+  var player = new Player(Origin, new Sprite( Array[SubSprite](new SubSprite(2,"153051153")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
   var monsters: List[Monster] = List() 
   var items: List[Item] = List()
   var mouse_dir: Position = null
+  var attack_dir: Position = null
 
   placePlayer()
-  placeMonster(new Goblin(0,0))
+  placeMonster(new Goblin(Origin))
   for(i <- 0 to 20){
-    placeItem(new HealingGoo(0,0))
+    placeItem(new HealingGoo(Origin))
   }
 
   def placePlayer(){
     val r = scala.util.Random
-    var x = r.nextInt(width)
-    var y = r.nextInt(height)
-    while((first_floor.getFloor())(x)(y).getBlocking() == true){
-      x = r.nextInt(width)
-      y = r.nextInt(height)
+    val pos = new Position(r.nextInt(dim.width),r.nextInt(dim.height))
+    while(occupied(pos) == true){
+      pos.x = r.nextInt(dim.width)
+      pos.y = r.nextInt(dim.height)
     }
-    player.setX(x)
-    player.setY(y)
+    player.pos = pos
   }
   def placeMonster(monster: Monster){
     val r = scala.util.Random
-    var x = r.nextInt(width)
-    var y = r.nextInt(height)
-    while( occupied(x,y)== true || lineOfSight(x,y,player.getX(),player.getY())==true ){
-      x = r.nextInt(width)
-      y = r.nextInt(height)
+    val pos = new Position(r.nextInt(dim.width),r.nextInt(dim.height))
+    while( occupied(pos)== true || lineOfSight(pos,player.pos)==true ){
+      pos.x = r.nextInt(dim.width)
+      pos.y = r.nextInt(dim.height)
     }
-    monster.setX(x)
-    monster.setY(y)
+    monster.pos = pos
     monsters = monster :: monsters
   }
   def placeItem(item: Item){
     val r = scala.util.Random
-    var x = r.nextInt(width)
-    var y = r.nextInt(height)
-    while( occupied_item(x,y)== true ){
-      x = r.nextInt(width)
-      y = r.nextInt(height)
+    val pos = new Position(r.nextInt(dim.width),r.nextInt(dim.height))
+    while( occupied_item(pos)== true ){
+      pos.x = r.nextInt(dim.width)
+      pos.y = r.nextInt(dim.height)
     }
-    item.setX(x)
-    item.setY(y)
+    item.pos = pos
     items = item :: items
   }
-  def occupied_item(x: Int, y: Int):Boolean = {
-    return first_floor.getFloor()(x)(y).getBlocking==true || items.exists( (itm: Item)=>{
-      return (x==itm.getX() && y==itm.getY())
+  def occupied_item(pos: Position):Boolean = {
+    return first_floor.getFloor()(pos.x)(pos.y).getBlocking==true || items.exists( (itm: Item)=>{
+      return (pos == itm.pos )
     })
   }
 
 
-  def lineOfSight(x1: Int,y1: Int,x2: Int, y2: Int ): Boolean = {
-    val deltaX = scala.math.abs(x1-x2)
-    val deltaY = scala.math.abs(y1-y2)
-    val signX = if((x2-x1)<0) -1 else 1
-    val signY = if((y2-y1)<0) -1 else 1
-    var x = x1
-    var y = y1
+  def lineOfSight(pos1: Position, pos2: Position ): Boolean = {
+    val deltaX = scala.math.abs(pos1.x-pos2.x)
+    val deltaY = scala.math.abs(pos1.y-pos2.y)
+    val signX = if((pos2.x-pos1.x)<0) -1 else 1
+    val signY = if((pos2.y-pos1.y)<0) -1 else 1
+    var x = pos1.x
+    var y = pos1.y
+    if(deltaX == deltaY && deltaY == 0){
+      return true
+    }
     if(deltaX > deltaY){
       var t = deltaY*2-deltaX
       do{
@@ -73,7 +71,7 @@ class GameObject(width: Int, height: Int) {
         }
         x += signX
         t += deltaY*2
-        if(x==x2 && y==y2){
+        if(x==pos2.x && y==pos2.y){
           return true
         }
       }while(first_floor.getFloor()(x)(y).getBlocking()==false)
@@ -87,7 +85,7 @@ class GameObject(width: Int, height: Int) {
         }
         y += signY
         t += deltaX*2
-        if(x==x2 && y==y2){
+        if(x==pos2.x && y==pos2.y){
           return true
         }
       }while(first_floor.getFloor()(x)(y).getBlocking()==false)
@@ -97,9 +95,9 @@ class GameObject(width: Int, height: Int) {
   def sortPos(p1: PositionPath, p2: PositionPath): Boolean = {
     return (p1.gcost + p1.hcost) < (p2.gcost + p2.hcost)
   }
-  def a_star_path(x1: Int,y1: Int,x2: Int, y2: Int ): List[Position] = {
-    val start_node = new PositionPath(x1,y1,null, 0, 0)
-    val end_node = new PositionPath(x2,y2, null, Int.MaxValue, Int.MaxValue)
+  def a_star_path(pos1: Position, pos2: Position ): List[Position] = {
+    val start_node = new PositionPath(pos1.x,pos1.y,null, 0, 0)
+    val end_node = new PositionPath(pos2.x,pos2.y, null, Int.MaxValue, Int.MaxValue)
     var open_set = List(start_node)
     var closed_set = List[PositionPath]()
     var path = List[PositionPath]()
@@ -127,7 +125,7 @@ class GameObject(width: Int, height: Int) {
       for(i <- -1 to 1){
         for(j <- -1 to 1){
           if(i!=0 || j!=0){
-            if((!occupied(current_node.x+i, current_node.y+j) || (end_node.x == (current_node.x+i) && end_node.y == (current_node.y+j)) ) && !closed_set.exists((p: PositionPath)=>p.x == (current_node.x+i) && p.y == (current_node.y+j))){
+            if((!occupied(current_node.translate(i,j)) || (end_node.x == (current_node.x+i) && end_node.y == (current_node.y+j)) ) && !closed_set.exists((p: PositionPath)=>p.x == (current_node.x+i) && p.y == (current_node.y+j))){
               //println("travail sur voisin x="+(current_node.x+i)+" y="+(current_node.y+j))
               var neighbour_node = open_set.find(p => p.x == (current_node.x+i) && p.y == (current_node.y+j)).getOrElse(
                 new PositionPath(current_node.x + i, current_node.y+j,null,Int.MaxValue,Int.MaxValue)
@@ -163,7 +161,7 @@ class GameObject(width: Int, height: Int) {
   }
 
   def newMap(){
-    first_floor = new MapAutomata(width, height)
+    first_floor = new MapAutomata(dim)
     placePlayer()
   }
 
@@ -173,42 +171,25 @@ class GameObject(width: Int, height: Int) {
   def getPlayer():Entity = {
     return player
   }
-  def occupied(x:Int, y:Int): Boolean = {
-    return first_floor.getFloor()(x)(y).getBlocking==true || (x==player.getX() && y==player.getY()) || monsters.exists( (m: Monster)=>{
-      return (x==m.getX() && y==m.getY())
+  def occupied(pos: Position): Boolean = {
+    return first_floor.getFloor()(pos.x)(pos.y).getBlocking==true || (pos==player.pos) || monsters.exists( (m: Monster)=>{
+      return pos==m.pos
     })
   }
   
-  def removeDead(monsterlist: List[Monster]): List[Monster] ={
-    monsterlist match{
-      case k::list => {
-        if(k.own_ia.state==State.Dead){
-          return(removeDead(list))
-        }else{
-          return(k::removeDead(list))
-        }
-      }
-      case list => list
-    }
-  }
-
   def processDecisions(){
     items.foreach((itm: Item)=> {
       itm.pickUp(this)
       }
     )
-    items = items.filter( itm =>{ println(itm.on_the_ground)
+    // filtering items that are not on the ground
+    items = items.filter( itm =>{ 
       itm.on_the_ground == true })
     monsters.foreach((m: Monster)=> {
-<<<<<<< HEAD
         m.processDecision(this)
         }
       )
-    monsters = removeDead(monsters)
-=======
-      m.processDecision(this)
-      }
-    )
->>>>>>> 2c0fbb623690e33278de35d4dd922c2c9537e4eb
+    // filtering dead monsters
+    monsters = monsters.filter( m => m.state!=State.Dead)
   }
 }

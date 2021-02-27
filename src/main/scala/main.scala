@@ -5,7 +5,7 @@ import swing._
 object My_app extends SimpleSwingApplication 
 {
   def top = new MainFrame { main_frame =>
-    title = "Enter the crapgeon!"
+    title = "Slime adventure!"
     resizable = false
     visible = true
     contents = new GamePanel(this)

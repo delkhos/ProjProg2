@@ -84,7 +84,7 @@ object Empty extends Environment(
 }
 
 object EmptyField extends Environment(
-  new Sprite(Array[SubSprite](new SubSprite(250,Field.getMainColor())) ,Color.BLACK)
+  new Sprite(Array[SubSprite](new SubSprite(258,Field.getMainColor())) ,Color.BLACK)
   , false) {
 }
 

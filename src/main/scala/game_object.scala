@@ -4,14 +4,20 @@ import java.awt.{Color,Graphics2D, Graphics}
 
 class GameObject(dim: Dimension) { 
   var first_floor = new MapAutomata(dim)
-  var player = new Player(Origin, new Sprite( Array[SubSprite](new SubSprite(2,"153051153")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
+  var player = new Player(Origin, new Sprite( Array[SubSprite](new SubSprite(256,"000051153")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
   var monsters: List[Monster] = List() 
   var items: List[Item] = List()
   var mouse_dir: Position = null
   var attack_dir: Position = null
-
+  var trophySpawned: Boolean = false
+  var win = false
+  var lose = false
+  var trophy = false
   placePlayer()
   placeMonster(new Goblin(Origin))
+  placeMonster(new Hunter(Origin))
+  placeMonster(new Hoblin(Origin))
+  placeMonster(new Bat(Origin))
   for(i <- 0 to 20){
     placeItem(new HealingGoo(Origin))
   }
@@ -171,10 +177,16 @@ class GameObject(dim: Dimension) {
   def getPlayer():Entity = {
     return player
   }
+  def searchMonster(monsterList: List[Monster], position:Position): Boolean = {
+    monsterList match{
+      case m::tl=> { 
+        return(m.pos==position || searchMonster(tl,position))
+      }
+      case emptyList => { return(false)}
+    }
+  }
   def occupied(pos: Position): Boolean = {
-    return first_floor.getFloor()(pos.x)(pos.y).getBlocking==true || (pos==player.pos) || monsters.exists( (m: Monster)=>{
-      return pos==m.pos
-    })
+    return first_floor.getFloor()(pos.x)(pos.y).getBlocking || (pos==player.pos) || searchMonster(monsters,pos)
   }
   
   def processDecisions(){
@@ -191,6 +203,14 @@ class GameObject(dim: Dimension) {
       )
     // filtering dead monsters
     monsters = monsters.filter( m => m.state!=State.Dead)
+    monsters match{
+      case m::tl => {}
+      case emptyList => {
+        if(!trophySpawned){
+          placeItem(new Trophy(Origin))
+        }
+      }
+    }
   }
 }
 

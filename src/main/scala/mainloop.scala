@@ -4,17 +4,15 @@ import swing.event._
 import swing._
 import java.awt.event.KeyEvent
 
-abstract class Ending extends Event{}
-
-object MainLoopObject{ 
+object MainLoopObject{ //object containing the main loop that runs the game
   def mainLoop(panel:GamePanel, vars:MainLoopVars, renderer: Renderer, game: GameObject, e: Event, game_matrix_dim: Dimension, matrix_dim: Dimension,ui_dim: Dimension){
-    if (game.player.health<=0){
+    if (game.player.health<=0){ //ends the game if the player dies
       if(!game.lose){
         game.lose = true
         Log.addLogMessage( new LogMessage( List( new SubMessage(" YOU LOSE ", "255000000")) ))
         panel.repaint()
       }
-    }else if(game.trophy){
+    }else if(game.trophy){ //ends the game if the player wins
       if(!game.win){
         game.win=true
         Log.addLogMessage( new LogMessage( List( new SubMessage(" YOU WIN ","255255000") )))
@@ -39,33 +37,33 @@ object MainLoopObject{
 
       }
     }else{
-      e match {
-        case KeyPressed(_,k,_,_) => 
+      e match { // respond to the key pressed and apply the corresponding decision if there is such
+        case KeyPressed(_,k,_,_) =>  //keyboard control
           game.mouse_dir = null
-          if(k == Key.Asterisk){
+          if(k == Key.Asterisk){ //resize the screen to the initial value
             vars.current_size = renderer.getTileSize()
             vars.dpos.x = 0.0f
             vars.dpos.y = 0.0f
             panel.repaint()
             println("Current resolution : size="+vars.current_size)
-          }else if(k == Key.Up){
+          }else if(k == Key.Up){ //moves the player a tile up,
             if(!game.occupied(game.player.pos.translate(0,-1))){
               game.player.pos.y += -1
               game.processDecisions()
               panel.repaint()
-            }else{ 
+            }else{ //or attack the monster that occupies the tile, is there is one
               var monsteropt = game.monsters.find(m => (m.pos == game.player.pos.translate(0,-1)))
               monsteropt match{
                 case Some(targetMonster) => {
                   game.player.attack(targetMonster)
-                  game.processDecisions()
+                  game.processDecisions() // go to the next turn
                   panel.repaint()
               
                 }
-                case None => {}
+                case None => {} // if the movement can not be applied, the turn continues
               }
             }
-          }else if(k == Key.Down){
+          }else if(k == Key.Down){ // similar to Up
             if(!game.occupied(game.player.pos.translate(0,1))){
               game.player.pos.y += 1
               game.processDecisions()
@@ -116,22 +114,18 @@ object MainLoopObject{
                 case None => {}
               }
             }
-          }else if(k == Key.W){
+          }else if(k == Key.W){ // skip the player's turn
             game.player.waitAction
             game.processDecisions()
             panel.repaint()
-          }else{
-            //panel.repaint()
-            println(k+"  "+ k + "\n")
-          }
-        case MousePressed(_,coord,_,_,_) => 
-          //println("clicked")
+          }else{} //continues the turn if the key does not correspon to any move
+
+        case MousePressed(_,coord,_,_,_) => // starts a dragging event, that allow the player to see the map freely
           vars.dragging = true
-        case MouseMoved(_,coord,_) => 
+
+        case MouseMoved(_,coord,_) => //detects where the mouse is, relative to the player, and executes controls similarly to Key.Up, in the direction ofthe mouse
           var clicked_x = ((coord.x -vars.dpos.x)/(vars.current_size.toFloat)).toInt
           var clicked_y = ((coord.y -vars.dpos.y)/(vars.current_size.toFloat)).toInt
-          //println("perso en: "+game.player.getX()+"  "+game.player.getY())
-          //println("angle : "+angle)
           val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game))
           
           if( dir != null && clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && game.occupied(game.player.pos.translate(dir.x,dir.y)) ==false ){
@@ -147,7 +141,7 @@ object MainLoopObject{
             game.attack_dir = null
           }
           
-        case MouseClicked(_,coord,_,_,_) => 
+        case MouseClicked(_,coord,_,_,_) => //determines if the player has clicked on a gametile, or on the ui and executes the corresponding action 
           var clicked_x = ((coord.x -vars.dpos.x)/(vars.current_size.toFloat)).toInt
           var clicked_y = ((coord.y -vars.dpos.y)/(vars.current_size.toFloat)).toInt
 
@@ -159,25 +153,24 @@ object MainLoopObject{
           val jend = (matrix_dim.height-ui_dim.height-1)
           val inventory_coord = ui_clicked_x-(istart+1)+(ui_clicked_y-(jstart+1))*(iend-istart-1)
   
-          if( clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && (game.mouse_dir != null || game.attack_dir != null)){
-            //println("attack_dir = " + game.attack_dir.x + " " + game.attack_dir.y)
+          if( clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && (game.mouse_dir != null || game.attack_dir != null)){ //the player has clicked on a gametile
             var monsteropt = game.monsters.find(m => (m.pos == game.attack_dir))
-            monsteropt match{
+            monsteropt match{ //toward a monster within the attack range
               case Some(targetMonster) => {
                 game.player.attack(targetMonster)
                 game.processDecisions()
                 panel.repaint()
               }
-              case None => {
+              case None => { //toward an empty tile
                 game.player.pos.x = game.mouse_dir.x
                 game.player.pos.y = game.mouse_dir.y
                 game.processDecisions()
                 panel.repaint()
               }
   
-              val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game))
+              val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game)) // if the player has not clicked on an adjascent tile, considers the tile in the direction of the mouse
             
-              if( dir != null && clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && game.occupied(game.player.pos.translate(dir.x,dir.y)) ==false ){
+              if(dir !=null && clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && game.occupied(game.player.pos.translate(dir.x,dir.y))==false ){
                 game.mouse_dir =  game.player.pos.translate(dir.x,dir.y)
                 game.attack_dir = game.player.pos.translate(dir.x,dir.y)
               }else if(dir != null){
@@ -188,33 +181,30 @@ object MainLoopObject{
                 game.attack_dir = null
               }
             }
-          }else if(inventory_coord>= 0 && inventory_coord < game.player.inventory.size && game.player.inventory.contents(inventory_coord) != null){
+            }else if(inventory_coord>= 0 && inventory_coord < game.player.inventory.size && game.player.inventory.contents(inventory_coord) != null){ // the player has clicked on the inventory
             game.player.inventory.contents(inventory_coord).use(game)
             game.processDecisions()
             panel.repaint()
           }
 
-        case MouseDragged(_,coord,_) => 
+          case MouseDragged(_,coord,_) => // move the map according to the drag
           val sx2 = coord.x
           val sy2 = coord.y
-          //println("resolving DRAG")
           if(vars.dragging){
-            //println("first grab OK")
             vars.spos.x = sx2
             vars.spos.y = sy2
             vars.dragging = false
           }
           vars.dpos.x +=  sx2-vars.spos.x 
           vars.dpos.y +=  sy2-vars.spos.y
-          //println("dragging dsx= "+(sx2-sx).toInt+"  "+(sy2-sy).toInt)
           vars.spos.x = sx2
           vars.spos.y = sy2
           vars.center_pos.x = (renderer.getTileSize()*game_matrix_dim.width/2 -vars.dpos.x)/(vars.current_size.toFloat)
           vars.center_pos.y = (renderer.getTileSize()*game_matrix_dim.height/2 -vars.dpos.y)/(vars.current_size.toFloat)
           panel.repaint()
-        case MouseReleased(_,coord,_,_,_) => 
+        case MouseReleased(_,coord,_,_,_) => // ends the dragging event
           vars.dragging = false
-        case MouseWheelMoved(_,coord,_,n) =>
+        case MouseWheelMoved(_,coord,_,n) => // zooms on the map 
           val old = vars.current_size
           vars.current_size = old+n
           if(vars.current_size<renderer.getTileSize()){
@@ -223,12 +213,11 @@ object MainLoopObject{
             vars.dpos = vars.dpos.translate(- n*vars.center_pos.x, - n*vars.center_pos.y)
           }
           panel.repaint()
-          //println("Current resolution : size="+current_size)
         case _ => {}
       }
     }
   }
-  def get_angle(clicked_x: Int, clicked_y: Int, game: GameObject):Double = {
+  def get_angle(clicked_x: Int, clicked_y: Int, game: GameObject):Double = { //returns the angle of the mouse relative to the object [player]
     val xa = 5
     val ya = 0
     val xb = clicked_x -game.player.pos.x
@@ -238,7 +227,7 @@ object MainLoopObject{
     }
     return scala.math.acos((xa*xb+ya*yb)/(scala.math.sqrt(xa*xa + ya*ya)*scala.math.sqrt(xb*xb+yb*yb)))*180/scala.math.Pi * (if (yb>=0) -1 else 1) + (if (yb>=0) 360 else 0)
   }
-  def getDirFromAngle(angle: Double): Position ={
+  def getDirFromAngle(angle: Double): Position ={ //converts a direction in a tile nearby the player
     //println("angle: " , angle)
     if(angle >= 500){
       return null

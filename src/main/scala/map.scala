@@ -161,13 +161,17 @@ class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
     return !stop
   }
 
-  def pouringRoom(x: Int, y: Int, n: Int, b: Biome):Int = {
+  def pouringRoom(x: Int, y: Int, n: Int, biomeInit: Biome):Int = {
     //println("inner pouring at: "+x+"  "+y+"  "+floor(x)(y))
+    var b = biomeInit
     if(floor3(x)(y)!=0 ){
       return 0;
     }else{
       if (biomeMap(x)(y) == Neutral){
         floor3(x)(y) = n
+        if(r.nextInt(100)<1){
+          b = intToBiome(r.nextInt(4))
+        }
         biomeMap(x)(y) = b
         return 1 + pouringRoom(x+1,y,n,b)+ pouringRoom(x-1,y,n,b) + pouringRoom(x,y+1,n,b) + pouringRoom(x,y-1,n,b) 
       }else{

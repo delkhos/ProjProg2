@@ -2,28 +2,28 @@ package rogue
 
 import scala.math.abs
 
-abstract class ArtificialIntelligence(){
+abstract class ArtificialIntelligence(){ // definition of the core elements to rule the comportement of the PNJs
   def processDecision(game: GameObject, monster: Monster){
   }
 }
 
-object State{
+object State{ //definitions to make the code easier to understand
   val Dead = -1
   val Idle = 0
   val Chasing = 1
   val Attacking = 2
 }
 
-class IdleChaseIA extends ArtificialIntelligence(){
-  var lastPlayerSeenPosition: Position = null
+class IdleChaseIA extends ArtificialIntelligence(){ //a simple AI, if the monster sees you, it will try to follow you, until it can attack  
+  var lastPlayerSeenPosition: Position = null //it has not seen the player already
   override def processDecision(game: GameObject , monster: Monster){
-    if(monster.state != State.Dead){
+    if(monster.state != State.Dead){ //test in case the monster is dead in this turn and still is in the memory
       println(monster + " " + monster.pos.x + " " + monster.pos.y)
-      if(game.lineOfSight(monster.pos,game.player.pos)){
-        if(abs(monster.pos.x-game.player.pos.x) <= 1 && abs(monster.pos.y-game.player.pos.y)<=1){ 
+      if(game.lineOfSight(monster.pos,game.player.pos)){ //determines if the monster can see the player
+        if(abs(monster.pos.x-game.player.pos.x) <= 1 && abs(monster.pos.y-game.player.pos.y)<=1){ //determine if the player is within the attack range
           monster.state = State.Attacking
         }else{
-          lastPlayerSeenPosition = new Position(game.player.pos.x, game.player.pos.y)
+          lastPlayerSeenPosition = new Position(game.player.pos.x, game.player.pos.y) //updates the known player position if the monster can see it
           if(monster.state == State.Idle){
             Log.addLogMessage( new LogMessage( List(
               monster.name , new SubMessage(" spotted ", "255255255")
@@ -33,32 +33,29 @@ class IdleChaseIA extends ArtificialIntelligence(){
           }
           monster.state = State.Chasing
         }
-        }else if(lastPlayerSeenPosition != null && monster.pos== lastPlayerSeenPosition){
+        }else if(lastPlayerSeenPosition != null && monster.pos== lastPlayerSeenPosition){ //if the monster loses the track of the player, it will idle again
         monster.state = State.Idle
       }
-      if(monster.state == State.Idle){
+      if(monster.state == State.Idle){ //random displacement while idling
         var nextPositions = List((1,1),(1,0),(1,-1),(-1,0),(-1,1),(-1,-1),(0,1),(0,-1))
         val r = scala.util.Random
         var i = r.nextInt(nextPositions.length)
         var delta = nextPositions(i)
-        while( game.occupied(monster.pos.translate(delta._1,delta._2)) )
+        while( game.occupied(monster.pos.translate(delta._1,delta._2)) ) //look for an unoccupied tile around the monster
         {
           nextPositions = nextPositions.take(i) ++ nextPositions.drop(i + 1)
           i = r.nextInt(nextPositions.length)
           delta = nextPositions(i)
         }
-        // vérifier le cas où il ne peut pas bouger du tout 
-        if(nextPositions.length == 0){
-          //println(monster+"cannot move")
+        if(nextPositions.length == 0){//if the monster can not move,it does nothing
       
         }else{
-          monster.pos = monster.pos.translate(delta._1, delta._2)
+          monster.pos = monster.pos.translate(delta._1, delta._2) // else it moves
         }
       }else if(monster.state==State.Chasing){
-        var path = game.a_star_path(monster.pos, lastPlayerSeenPosition)
+        var path = game.a_star_path(monster.pos, lastPlayerSeenPosition) //follow the player, using an A* algorithm, see game_object file
         monster.pos = path(0)
-      }else if(monster.state==State.Attacking){
-        //println("attacking not yet implemented")
+      }else if(monster.state==State.Attacking){ //the monster attack the player and then turn into a non-attacking state, to avoid unwanted attack with turn-based mechanics
         monster.attack(game.player)
         monster.state=State.Chasing
       }
@@ -66,20 +63,20 @@ class IdleChaseIA extends ArtificialIntelligence(){
   }
 }
 
-class HunterIA extends ArtificialIntelligence(){
+class HunterIA extends ArtificialIntelligence(){ //similar to IdleChaseIA, but the monster always know where the player is
   override def processDecision(game: GameObject , monster: Monster){
     if(monster.state != State.Dead){
       println(monster + " " + monster.pos.x + " " + monster.pos.y)
       if(abs(monster.pos.x-game.player.pos.x) <= 1 && abs(monster.pos.y-game.player.pos.y)<=1){ 
         monster.state = State.Attacking
       }else{
-        if(monster.state == State.Idle){
+        if(monster.state == State.Idle){ //at the first turn, the monster locate the player and stop idling
           Log.addLogMessage( new LogMessage( List(monster.name , new SubMessage(" is chasing ", "255255255"), game.player.name ) ) )
         }
         monster.state = State.Chasing
       }
         
-        if(monster.state == State.Idle){
+        if(monster.state == State.Idle){ // even if it can't see the player
           monster.state == State.Chasing
           Log.addLogMessage( new LogMessage( List(monster.name , new SubMessage(" is chasing ", "255255255"), game.player.name ) ) )
           
@@ -89,7 +86,6 @@ class HunterIA extends ArtificialIntelligence(){
 
     
         }else if(monster.state==State.Attacking){
-        //println("attacking not yet implemented")
           monster.attack(game.player)
           monster.state= State.Chasing
         }
@@ -97,7 +93,7 @@ class HunterIA extends ArtificialIntelligence(){
   }
 }
 
-class FastIA extends ArtificialIntelligence(){
+class FastIA extends ArtificialIntelligence(){ //similar to the IdleChaseIA but it acts twice a turn
   var lastPlayerSeenPosition: Position = null
   def halfProcess(game: GameObject, monster: Monster){
     if(monster.state != State.Dead){
@@ -130,9 +126,7 @@ class FastIA extends ArtificialIntelligence(){
           i = r.nextInt(nextPositions.length)
           delta = nextPositions(i)
         }
-        // vérifier le cas où il ne peut pas bouger du tout 
         if(nextPositions.length == 0){
-          //println(monster+"cannot move")
       
         }else{
           monster.pos = monster.pos.translate(delta._1, delta._2)
@@ -141,19 +135,18 @@ class FastIA extends ArtificialIntelligence(){
         var path = game.a_star_path(monster.pos, lastPlayerSeenPosition)
         monster.pos = path(0)
       }else if(monster.state==State.Attacking){
-        //println("attacking not yet implemented")
         monster.attack(game.player)
         monster.state=State.Chasing
       }
     }
   }
-  override def processDecision(game: GameObject , monster: Monster){
+  override def processDecision(game: GameObject , monster: Monster){ // the idleChase Process is here a subfunction, applied twice
     halfProcess(game,monster)
     halfProcess(game,monster)
-  }
+  } 
 }
 
-class SlowIA extends ArtificialIntelligence(){
+class SlowIA extends ArtificialIntelligence(){ // similar to the IdleChaseIA, but it acts only once every two turns
   var lastPlayerSeenPosition: Position = null
   var turnCount: Int = 0
   override def processDecision(game: GameObject , monster: Monster){
@@ -189,9 +182,7 @@ class SlowIA extends ArtificialIntelligence(){
           i = r.nextInt(nextPositions.length)
           delta = nextPositions(i)
         }
-        // vérifier le cas où il ne peut pas bouger du tout 
         if(nextPositions.length == 0){
-          //println(monster+"cannot move")
       
         }else{
           monster.pos = monster.pos.translate(delta._1, delta._2)
@@ -200,7 +191,6 @@ class SlowIA extends ArtificialIntelligence(){
         var path = game.a_star_path(monster.pos, lastPlayerSeenPosition)
         monster.pos = path(0)
       }else if(monster.state==State.Attacking){
-        //println("attacking not yet implemented")
         monster.attack(game.player)
         monster.state= State.Chasing
       }

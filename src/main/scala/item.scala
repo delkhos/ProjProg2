@@ -32,3 +32,13 @@ class HealingGoo (pos: Position) extends Item (
 
 }
 
+class Trophy (pos: Position) extends Item (
+  pos,
+  new Sprite( Array[SubSprite]( new SubSprite(294,"255255000"), new SubSprite(295, "153051000") ),new Color(0.0f,0.0f,0.0f,0.0f)),
+  false,
+  "trophy",
+  "255255000"){
+    override def use(game: GameObject){
+      game.trophy=true
+    }
+  }

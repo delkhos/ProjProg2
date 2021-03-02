@@ -37,7 +37,7 @@ class GameObject(dim: Dimension) {
   def placePlayer(){
     val r = scala.util.Random
     val pos = new Position(r.nextInt(dim.width),r.nextInt(dim.height))
-    while(occupied(pos) == true){
+    while(occupied(pos) == true ){
       pos.x = r.nextInt(dim.width)
       pos.y = r.nextInt(dim.height)
     }
@@ -47,10 +47,14 @@ class GameObject(dim: Dimension) {
   def placeMonster(monster: Monster){
     val r = scala.util.Random
     val pos = new Position(r.nextInt(dim.width),r.nextInt(dim.height))
-    while( occupied(pos)== true || lineOfSight(pos,player.pos)==true ){
+    var i = 0
+    while( ( occupied(pos)== true || lineOfSight(pos,player.pos)==true ) && i < 100){
       pos.x = r.nextInt(dim.width)
       pos.y = r.nextInt(dim.height)
+      i+=1
     }
+    if(i>=100)
+      return
     monster.pos = pos
     monsters = monster :: monsters
   }
@@ -59,10 +63,14 @@ class GameObject(dim: Dimension) {
   def placeItem(item: Item){
     val r = scala.util.Random
     val pos = new Position(r.nextInt(dim.width),r.nextInt(dim.height))
-    while( occupied_item(pos)== true ){
+    var i = 0
+    while( occupied_item(pos)== true && i< 100){
       pos.x = r.nextInt(dim.width)
       pos.y = r.nextInt(dim.height)
+      i+=1
     }
+    if(i>=100)
+      return
     item.pos = pos
     items = item :: items
   }

@@ -352,39 +352,3 @@ class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
   applyBiomes()
 
 }
-/*
-class MapPolygon(dim.width: Int, dim.height: Int, sides:Int, radius: Int, rotation: Double) extends Map(dim.width,height){
-  val rot = rotation*(scala.math.Pi / 180.0)
-
-  val rchange: Double = (scala.math.Pi * 2.0) / sides
-  var r: Double = 0.0
-  while(r < scala.math.Pi*2)
-  {
-    val p1_x:Double = radius + scala.math.cos(r + rot) * radius;
-    val p1_y:Double = radius + scala.math.sin(r + rot) * radius;
-
-    // define second point (rotated 1 iteration further).
-    val p2_x:Double = radius + scala.math.cos(r + rot + rchange) * radius;
-    val p2_y:Double = radius + scala.math.sin(r + rot + rchange) * radius;
-
-    val len:Double = scala.math.sqrt(scala.math.pow(p2_x - p1_x, 2) + scala.math.pow(p2_y - p1_y, 2));
-    var i:Double = 0.0
-    while( i < 1)
-    {
-        val place_x:Int = scala.math.round((1 - i) * p1_x + i * p2_x).toInt;
-        val place_y:Int = scala.math.round((1 - i) * p1_y + i * p2_y).toInt;
-
-        floor(place_y)(place_x) = 1;
-
-        i+= 1.0/len
-    }
-
-    r += rchange
-
-  }
-}
-*/
-
-
-
-

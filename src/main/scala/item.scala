@@ -21,7 +21,6 @@ abstract class Item (arg_pos: Position, sprite: Sprite, arg_equipable: Boolean, 
   }
 }
 
-<<<<<<< HEAD
 class HealingGoo (pos: Position) extends Item (
   pos,
   new Sprite( Array[SubSprite](new SubSprite(15,"240060060")),new Color(0.0f,0.0f,0.0f,0.0f)),
@@ -34,14 +33,6 @@ class HealingGoo (pos: Position) extends Item (
     game.player.health += 5
     // Removes itself from the inventory
     game.player.inventory.contents(pos_in_inventory) = null
-=======
-class HealingGoo (x: Int, y: Int) extends Item (
-  x,y,
-  new Sprite( Array[SubSprite](new SubSprite(15,"000255000")) , new Color(1.0f,1.0f,1.0f,0.0f)),
-  false,
-  "healing goo",
-  "000255000"){
->>>>>>> e423417a8da2f9c1785f9af0e1de339bdf4d4bfa
   }
 
 }

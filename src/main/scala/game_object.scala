@@ -227,7 +227,6 @@ class GameObject(dim: Dimension) {
       itm.pickUp(this)
     }
     )
-<<<<<<< HEAD
     // we remove items that are not on the ground anymore
     // from the list of items
     items = items.filter( itm =>{ 
@@ -249,15 +248,6 @@ class GameObject(dim: Dimension) {
         }
       }
     }
-=======
-    items = items.filter( itm =>{ println(itm.on_the_ground)
-    itm.on_the_ground == true })
-    monsters.foreach((m: Monster)=> {
-        m.processDecision(this)
-    }
-    )
-    monsters = removeDead(monsters)
->>>>>>> e423417a8da2f9c1785f9af0e1de339bdf4d4bfa
   }
 }
 

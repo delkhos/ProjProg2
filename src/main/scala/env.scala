@@ -2,7 +2,8 @@ package rogue
 
 import java.awt.{Color,Graphics2D, Graphics}
 
-abstract class Biome(mainColor: String){ //a biome is a set of tile and color, used to define how to "paint" the environment
+//a biome is a set of tile and color, used to define how to "paint" the environment
+abstract class Biome(mainColor: String){ 
   def getMainColor() : String = {
     return mainColor
   }
@@ -19,11 +20,13 @@ object Temple extends Biome("255255153"){
 object Neutral extends Biome("000000000"){
 }
 
-class Environment(sprite: Sprite, blocking: Boolean){ //an environment an element of the landscape: either the ground or a wall ...
+class Environment(sprite: Sprite, blocking: Boolean){ //an environment is an element of the landscape: either the ground or a wall ...
   def getBlocking(): Boolean = {
     return blocking 
   }
-  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dpos: DPosition, pos: Position){//draws the element according to the sprite given as an argument in the tile in position [pos] 
+
+  //draws the element's sprite at a given position [pos] 
+  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dpos: DPosition, pos: Position){
     g.setColor(sprite.getBgColor());
     val size:Float = current_size
     val sx1:Float = (pos.x)*size +dpos.x //-rx
@@ -44,6 +47,8 @@ class Environment(sprite: Sprite, blocking: Boolean){ //an environment an elemen
       g.drawImage(tileset_handler.getColoredTileset(elements(i).getColor()), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
     }
   }
+
+  // Same as the function above, but overloaded to print it in a greyer shade
   def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dpos: DPosition, pos: Position,  ratio: Double){
     val bg = sprite.getBgColor()
     g.setColor(new Color( (bg.getRed() * ratio).toInt , (bg.getGreen() * ratio).toInt, (bg.getBlue() * ratio).toInt    ));

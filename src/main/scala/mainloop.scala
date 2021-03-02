@@ -4,6 +4,9 @@ import swing.event._
 import swing._
 import java.awt.event.KeyEvent
 
+/* This function is called by the GamePanel, when a user input occurs
+ * It is the MainLoop of our game, since it is not real time
+ */
 object MainLoopObject{ //object containing the main loop that runs the game
   def mainLoop(panel:GamePanel, vars:MainLoopVars, renderer: Renderer, game: GameObject, e: Event, game_matrix_dim: Dimension, matrix_dim: Dimension,ui_dim: Dimension){
     if (game.player.health<=0){ //ends the game if the player dies
@@ -34,7 +37,6 @@ object MainLoopObject{ //object containing the main loop that runs the game
         ) ) )
         panel.repaint()
 
-
       }
     }else{
       e match { // respond to the key pressed and apply the corresponding decision if there is such
@@ -51,7 +53,7 @@ object MainLoopObject{ //object containing the main loop that runs the game
               game.player.pos.y += -1
               game.processDecisions()
               panel.repaint()
-            }else{ //or attack the monster that occupies the tile, is there is one
+            }else{ //or attack the monster that occupies the tile, if there is one
               var monsteropt = game.monsters.find(m => (m.pos == game.player.pos.translate(0,-1)))
               monsteropt match{
                 case Some(targetMonster) => {
@@ -115,10 +117,11 @@ object MainLoopObject{ //object containing the main loop that runs the game
               }
             }
           }else if(k == Key.W){ // skip the player's turn
+            // used to "wait"
             game.player.waitAction
             game.processDecisions()
             panel.repaint()
-          }else{} //continues the turn if the key does not correspon to any move
+          }else{} //continues the turn if the key does not corresponds to any move
 
         case MousePressed(_,coord,_,_,_) => // starts a dragging event, that allow the player to see the map freely
           vars.dragging = true
@@ -142,6 +145,8 @@ object MainLoopObject{ //object containing the main loop that runs the game
           }
           
         case MouseClicked(_,coord,_,_,_) => //determines if the player has clicked on a gametile, or on the ui and executes the corresponding action 
+          // allow both movements and attacks of the player using the mouse
+          // For now it is the only way to walk diagonaly
           var clicked_x = ((coord.x -vars.dpos.x)/(vars.current_size.toFloat)).toInt
           var clicked_y = ((coord.y -vars.dpos.y)/(vars.current_size.toFloat)).toInt
 
@@ -168,7 +173,7 @@ object MainLoopObject{ //object containing the main loop that runs the game
                 panel.repaint()
               }
   
-              val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game)) // if the player has not clicked on an adjascent tile, considers the tile in the direction of the mouse
+              val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game)) // if the player has not clicked on an adjacent tile, considers the tile in the direction of the mouse
             
               if(dir !=null && clicked_x < game.first_floor.dim.width && clicked_y < game.first_floor.dim.height && game.occupied(game.player.pos.translate(dir.x,dir.y))==false ){
                 game.mouse_dir =  game.player.pos.translate(dir.x,dir.y)
@@ -204,7 +209,7 @@ object MainLoopObject{ //object containing the main loop that runs the game
           panel.repaint()
         case MouseReleased(_,coord,_,_,_) => // ends the dragging event
           vars.dragging = false
-        case MouseWheelMoved(_,coord,_,n) => // zooms on the map 
+        case MouseWheelMoved(_,coord,_,n) => // zooms in and out on the map 
           val old = vars.current_size
           vars.current_size = old+n
           if(vars.current_size<renderer.getTileSize()){
@@ -217,7 +222,7 @@ object MainLoopObject{ //object containing the main loop that runs the game
       }
     }
   }
-  def get_angle(clicked_x: Int, clicked_y: Int, game: GameObject):Double = { //returns the angle of the mouse relative to the object [player]
+  def get_angle(clicked_x: Int, clicked_y: Int, game: GameObject):Double = { //returns the angle of the mouse relative to the object [player] and the horizontal line
     val xa = 5
     val ya = 0
     val xb = clicked_x -game.player.pos.x
@@ -227,8 +232,7 @@ object MainLoopObject{ //object containing the main loop that runs the game
     }
     return scala.math.acos((xa*xb+ya*yb)/(scala.math.sqrt(xa*xa + ya*ya)*scala.math.sqrt(xb*xb+yb*yb)))*180/scala.math.Pi * (if (yb>=0) -1 else 1) + (if (yb>=0) 360 else 0)
   }
-  def getDirFromAngle(angle: Double): Position ={ //converts a direction in a tile nearby the player
-    //println("angle: " , angle)
+  def getDirFromAngle(angle: Double): Position ={ //converts an angle to direction to a tile nearby the player
     if(angle >= 500){
       return null
     }else if(angle <= 22.5 || angle >= 347.5){

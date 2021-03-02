@@ -2,29 +2,32 @@ package rogue
 
 import scala.math.abs
 
-abstract class ArtificialIntelligence(){ // definition of the core elements to rule the comportement of the PNJs
+abstract class ArtificialIntelligence(){ // definition of the core elements to rule the behavior of the PNJs
   def processDecision(game: GameObject, monster: Monster){
   }
 }
 
+// This object serves the purpose of an enumeration
 object State{ //definitions to make the code easier to understand
   val Dead = -1
   val Idle = 0
   val Chasing = 1
   val Attacking = 2
 }
-
-class IdleChaseIA extends ArtificialIntelligence(){ //a simple AI, if the monster sees you, it will try to follow you, until it can attack  
+//a simple AI, if the monster sees you, it will try to follow you, until it can attack  
+// if the monster can't see you anymore it will go to the last known position of the hero
+class IdleChaseIA extends ArtificialIntelligence(){ 
   var lastPlayerSeenPosition: Position = null //it has not seen the player already
   override def processDecision(game: GameObject , monster: Monster){
     if(monster.state != State.Dead){ //test in case the monster is dead in this turn and still is in the memory
-      println(monster + " " + monster.pos.x + " " + monster.pos.y)
+      //println(monster + " " + monster.pos.x + " " + monster.pos.y)
       if(game.lineOfSight(monster.pos,game.player.pos)){ //determines if the monster can see the player
         if(abs(monster.pos.x-game.player.pos.x) <= 1 && abs(monster.pos.y-game.player.pos.y)<=1){ //determine if the player is within the attack range
           monster.state = State.Attacking
         }else{
           lastPlayerSeenPosition = new Position(game.player.pos.x, game.player.pos.y) //updates the known player position if the monster can see it
           if(monster.state == State.Idle){
+            // when the monster spots the player, prints a message in the log stating that event
             Log.addLogMessage( new LogMessage( List(
               monster.name , new SubMessage(" spotted ", "255255255")
                 , game.player.name )
@@ -36,7 +39,7 @@ class IdleChaseIA extends ArtificialIntelligence(){ //a simple AI, if the monste
         }else if(lastPlayerSeenPosition != null && monster.pos== lastPlayerSeenPosition){ //if the monster loses the track of the player, it will idle again
         monster.state = State.Idle
       }
-      if(monster.state == State.Idle){ //random displacement while idling
+      if(monster.state == State.Idle){ //random movement while idling
         var nextPositions = List((1,1),(1,0),(1,-1),(-1,0),(-1,1),(-1,-1),(0,1),(0,-1))
         val r = scala.util.Random
         var i = r.nextInt(nextPositions.length)

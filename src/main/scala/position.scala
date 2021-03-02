@@ -9,6 +9,7 @@ class Position(arg_x:Int , arg_y: Int){ // definition of the position object, th
     return new Position(x+dx,y+dy)
   }
 
+  // override the "=" function to easily compare two positions
   override def equals(that: Any): Boolean =
     that match {
       case that: Position => that.x == x && that.y == y
@@ -16,6 +17,9 @@ class Position(arg_x:Int , arg_y: Int){ // definition of the position object, th
   }
 
 }
+/*
+ * This is the same as a position but, using floats
+ */
 class DPosition(arg_x:Float , arg_y: Float){
   var x = arg_x
   var y = arg_y
@@ -32,6 +36,10 @@ class DPosition(arg_x:Float , arg_y: Float){
   }
 
 }
+
+/* A PositionPath is a position that holds a little bit more information,
+ * ie it's cost for the A* pathfinding algorithm
+ */
 class PositionPath(arg_x:Int , arg_y: Int, arg_parent: PositionPath, arg_gcost: Int, arg_hcost: Int) extends Position(arg_x, arg_y){
   var gcost = arg_gcost
   var hcost = arg_hcost

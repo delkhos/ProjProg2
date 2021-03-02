@@ -2,6 +2,8 @@ package rogue
 
 import java.awt.{Color,Graphics2D, Graphics}
 
+// This class is in charge of all the rendering to our GamePanel
+// It posesses a tileset_handler. 
 class Renderer {
   val tileset_handler = new TileSetHandler(16, "src/main/resources/spritetable.png")
   def getTileSize():Int = {
@@ -11,6 +13,9 @@ class Renderer {
   def initIsOk(): Boolean = {
     return tileset_handler.isReady()
   }
+  // We have drawing functions that allows use to print 
+  // elements of our tileset onto the screen on a grid.
+  // We also allow a displacement, used for the darring of the map
   def paintCharacter(g: Graphics2D,c: Int, pos: Position, bg: Color, fg: String, current_size: Int, dpos: DPosition){
     val x:Int = c % 16 
     val y:Int = c / 16 
@@ -28,8 +33,6 @@ class Renderer {
     g.drawImage(tileset_handler.getColoredTileset(fg), sx1.toInt, sy1.toInt, sx2.toInt, sy2.toInt, dx1, dy1, dx2, dy2, null)
   }
   def paintCharacterGray(g: Graphics2D,c: Int, pos: Position, bg: Color, fg: String, current_size: Int, ratio: Double, dpos: DPosition){
-
-
     val x:Int = c % 16 
     val y:Int = c / 16 
     val dx1:Int = x*tileset_handler.getSize() 
@@ -104,11 +107,8 @@ class Renderer {
       for(y: Int <- 0 to (floor.dim.height-1) ){
         val pos = new Position(x,y)
         if(game.lineOfSight(player.pos,pos)){
-        //if(true){
           floor.getSeen()(x)(y)=1
           floor_grid(x)(y).draw(g,current_size, tileset_handler,dpos,pos)
-          //////
-          //println(floor_grid(x)(y))
         }else if(floor.getSeen()(x)(y)==1){
           floor_grid(x)(y).draw(g,current_size, tileset_handler,dpos,pos,0.5)
         }
@@ -157,13 +157,14 @@ class Renderer {
           // draw item
           game.player.inventory.contents(inventory_coord).draw(g,tileset_handler.getSize(),tileset_handler, DOrigin, new Position(i,j))
         }else if(inventory_coord >=0 && inventory_coord < game.player.inventory.size && game.player.inventory.contents(inventory_coord) == null) {
+          // draw a grey bow if the slot is free
           paintCharacter(g,('Z').toInt + 1, new Position(i, j), Color.BLACK, "120120120", tileset_handler.getSize() , DOrigin)
           paintCharacter(g,('Z').toInt + 3, new Position(i, j), new Color(1.0f,1.0f,1.0f,0.0f), "120120120", tileset_handler.getSize() , DOrigin)
         }else{
+          // draw a white cross if this slot will never be free
           paintCharacter(g,('Z').toInt + 2, new Position(i, j), Color.BLACK, "230230230", tileset_handler.getSize() , DOrigin)
           paintCharacter(g,('0').toInt - 1, new Position(i, j), new Color(1.0f,1.0f,1.0f,0.0f), "230230230", tileset_handler.getSize() , DOrigin)
         }
-        //afficher l'objet et les cases non remplissable.
       }
     }
   }
@@ -175,10 +176,12 @@ class Renderer {
 
     clearScreen(g, matrix_dim, tileset_handler.getSize())
     drawMap(g, current_size, game, dpos)
-    //draw monsters 
+  //draw items
     game.items.foreach( (itm: Item) => itm.draw(g, current_size, tileset_handler,dpos,game) )
+    //draw monsters 
     game.monsters.foreach( (m: Monster) => m.draw(g, current_size, tileset_handler,dpos, game) )
     game.getPlayer().draw(g,current_size, tileset_handler, dpos)
+    //draw the direction pointer if the mouse is on the game screen
     if(game.mouse_dir != null){
         paintCharacter(g, 9, game.mouse_dir, new Color(1.0f,1.0f,1.0f,0.0f), "240240068", current_size, dpos)
     }

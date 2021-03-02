@@ -2,14 +2,17 @@ package rogue
 
 import java.awt.{Color,Graphics2D, Graphics}
 
+/*
+ * An item is an entity that can be both on the ground and in the player's inventory
+ * It has a pickup method to get inside the inventory.
+ * It also has a "use" method to define what happens when it is used
+ */
 abstract class Item (arg_pos: Position, sprite: Sprite, arg_equipable: Boolean, name_arg: String, name_color: String) extends Entity(arg_pos,sprite) {
   var equipable = arg_equipable 
   var on_the_ground = true
   var pos_in_inventory = 0
   val name = new SubMessage(name_arg,name_color)
   def pickUp(game: GameObject ){
-    //println("posx = " + pos.x + " posy = "+pos.y)
-    //println("player.posx = " + game.player.pos.x + " player.posy = "+game.player.pos.y)
     if( game.player.pos == pos ){
       game.player.inventory.addItem(this)
     }
@@ -26,7 +29,9 @@ class HealingGoo (pos: Position) extends Item (
   "220030000"){
 
   override def use(game: GameObject){
+    // heals 5 health points
     game.player.health += 5
+    // Removes itself from the inventory
     game.player.inventory.contents(pos_in_inventory) = null
   }
 

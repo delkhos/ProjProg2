@@ -6,6 +6,17 @@ import javax.imageio.ImageIO
 import java.awt.GraphicsEnvironment
 import java.awt.{Color,Graphics2D, Graphics}
 
+
+/*
+ * The tilesetHandler is in charge of our tilesets.
+ * We have one base tileset, the white one.
+ * The tilesethandler keeps track, using a dictionary, of all loading
+ * alternate colors of the tileset.
+ * When looking up for an element of a certain color,
+ * if the colored tileset isn't in the dictionary, it is generated,
+ * by copying the original tileset, and replacing all white pixels by this new color. 
+ * It is then added to the dictionary
+ */
 class TileSetHandler(size: Int,path: String ) {
 
   val GFX_CONFIG = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration()
@@ -93,11 +104,13 @@ class TileSetHandler(size: Int,path: String ) {
   def getSize():Int = {
     return size      
   }
+  // When asked to give a tileset of a certain color,
+  // Tests if it's already loaded,
+  // and if not, loads it.
   def getColoredTileset(color:String):BufferedImage = {
     val red = toInt(color.substring(0,3))
     val green = toInt(color.substring(3,6))
     val blue = toInt(color.substring(6,9))
-    //println("Debug : " + red + "  " + green + "  " + blue + "\n")
     if( tileSets.contains(color) ){
       return tileSets(color)
     }else{

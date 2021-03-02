@@ -6,6 +6,11 @@ import java.awt.{Color,Graphics2D, Graphics}
 import java.awt.image.BufferedImage                                           
 import java.awt.event.KeyEvent
 
+/*
+ * This class extends the swing Panel.
+ * It is the swing object in which all our game is handled
+ * , from logic, to drawing.
+ */
 class GamePanel(main_frame: MainFrame ) extends Panel {
   val game_matrix_dim = new Dimension(70,44)
 
@@ -36,7 +41,7 @@ class GamePanel(main_frame: MainFrame ) extends Panel {
   listenTo(mouse.wheel)
   listenTo(keys)
   //**************************************************************//
-  //************* reactions correspond à la MainLoop *************//
+  //************* reactions corresponds to the MainLoop *************//
   //**************************************************************//
   this.reactions += {
     case e => MainLoopObject.mainLoop(this,vars,renderer, game, e, game_matrix_dim, screen_matrix_dim,ui_dim)

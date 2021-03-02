@@ -3,7 +3,7 @@ package rogue
 import java.awt.{Color,Graphics2D, Graphics}
 
 class Renderer {
-  val tileset_handler = new TileSetHandler(16, "src/main/resources/3_16.png")
+  val tileset_handler = new TileSetHandler(16, "src/main/resources/spritetable.png")
   def getTileSize():Int = {
     return tileset_handler.getSize()
   }

@@ -1,6 +1,6 @@
 package rogue 
 
-class Position(arg_x:Int , arg_y: Int){
+class Position(arg_x:Int , arg_y: Int){ // definition of the position object, that reunite the x and y coordinates
   var x = arg_x
   var y = arg_y
   def canEqual(a: Any) = a.isInstanceOf[Position]

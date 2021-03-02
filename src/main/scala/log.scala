@@ -8,7 +8,7 @@ class SubMessage(str: String, col: String){
 case class LogMessage(sub_messages: List[SubMessage]){
 }
 
-object Log{
+object Log{ //register the messages to display on screen
   var messages = List[LogMessage]()
   def addLogMessage(msg: LogMessage){
     if(messages.length == 100){

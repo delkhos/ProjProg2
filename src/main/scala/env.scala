@@ -2,12 +2,12 @@ package rogue
 
 import java.awt.{Color,Graphics2D, Graphics}
 
-abstract class Biome(mainColor: String){
+abstract class Biome(mainColor: String){ //a biome is a set of tile and color, used to define how to "paint" the environment
   def getMainColor() : String = {
     return mainColor
   }
 }
-object Cave extends Biome("153051000"){
+object Cave extends Biome("153051000"){ //definition of several simple biomes
 }
 
 object Field extends Biome("000153000"){
@@ -19,11 +19,11 @@ object Temple extends Biome("255255153"){
 object Neutral extends Biome("000000000"){
 }
 
-class Environment(sprite: Sprite, blocking: Boolean) extends{
+class Environment(sprite: Sprite, blocking: Boolean){ //an environment an element of the landscape: either the ground or a wall ...
   def getBlocking(): Boolean = {
-    return blocking
+    return blocking 
   }
-  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dpos: DPosition, pos: Position){
+  def draw(g: Graphics2D, current_size: Int, tileset_handler: TileSetHandler, dpos: DPosition, pos: Position){//draws the element according to the sprite given as an argument in the tile in position [pos] 
     g.setColor(sprite.getBgColor());
     val size:Float = current_size
     val sx1:Float = (pos.x)*size +dpos.x //-rx
@@ -32,7 +32,7 @@ class Environment(sprite: Sprite, blocking: Boolean) extends{
     val sy2:Float = sy1 + (size)
     g.fillRect(sx1.toInt,sy1.toInt, current_size, current_size)
 
-    val elements = sprite.getElements()
+    val elements = sprite.getElements()//draws the subsprites to form a sprite
     for(i <- 0 to (elements.size-1) ){
       val c = elements(i).getCharCode()
       val xv:Int = c % 16 
@@ -73,12 +73,12 @@ class Environment(sprite: Sprite, blocking: Boolean) extends{
 }
 
 
-object Granite extends Environment(
+object Granite extends Environment( //definitions of the environment parts, here a wall
   new Sprite(Array[SubSprite](new SubSprite(0,"255255255")) ,new Color(180,180,180))
   , true) {
 }
 
-object Empty extends Environment(
+object Empty extends Environment( // and here, several floor types
   new Sprite(Array[SubSprite](new SubSprite(250,"180180180")) ,Color.BLACK)
   , false) {
 }

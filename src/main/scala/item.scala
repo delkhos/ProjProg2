@@ -31,6 +31,8 @@ class HealingGoo (pos: Position) extends Item (
   override def use(game: GameObject){
     // heals 5 health points
     game.player.health += 5
+    if(game.player.health > game.player.max_health)
+      game.player.health = game.player.max_health
     // Removes itself from the inventory
     game.player.inventory.contents(pos_in_inventory) = null
   }

@@ -9,6 +9,8 @@
 * To use an item, just click on it in your inventory.
 * You can click and drag the map.
 * You can zoom in and out on the map using the mousewheel.
+### Gameplay
+* There are high herbs that block vision but do not block movement
 
 ### Goal
 For now the goal is to kill all 4 ennemies of the (only) floor. Once it is done, "trophy" items will spawn all around the map, to win, the player needs to pick one up and use it.

@@ -106,8 +106,7 @@ class Renderer {
     for(x: Int <- 0 to (floor.dim.width-1) ){
       for(y: Int <- 0 to (floor.dim.height-1) ){
         val pos = new Position(x,y)
-        //if(game.lineOfSight(player.pos,pos)){
-        if(true){  
+        if(game.lineOfSight(player.pos,pos)){
           floor.getSeen()(x)(y)=1
           floor_grid(x)(y).draw(g,current_size, tileset_handler,dpos,pos)
         }else if(floor.getSeen()(x)(y)==1){

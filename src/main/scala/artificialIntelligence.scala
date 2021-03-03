@@ -69,7 +69,7 @@ class IdleChaseIA extends ArtificialIntelligence(){
 class HunterIA extends ArtificialIntelligence(){ //similar to IdleChaseIA, but the monster always know where the player is
   override def processDecision(game: GameObject , monster: Monster){
     if(monster.state != State.Dead){
-      println(monster + " " + monster.pos.x + " " + monster.pos.y)
+      //println(monster + " " + monster.pos.x + " " + monster.pos.y)
       if(abs(monster.pos.x-game.player.pos.x) <= 1 && abs(monster.pos.y-game.player.pos.y)<=1){ 
         monster.state = State.Attacking
       }else{
@@ -100,7 +100,7 @@ class FastIA extends ArtificialIntelligence(){ //similar to the IdleChaseIA but 
   var lastPlayerSeenPosition: Position = null
   def halfProcess(game: GameObject, monster: Monster){
     if(monster.state != State.Dead){
-      println(monster + " " + monster.pos.x + " " + monster.pos.y)
+      //println(monster + " " + monster.pos.x + " " + monster.pos.y)
       if(game.lineOfSight(monster.pos,game.player.pos)){
         if(abs(monster.pos.x-game.player.pos.x) <= 1 && abs(monster.pos.y-game.player.pos.y)<=1){ 
           monster.state = State.Attacking
@@ -156,7 +156,7 @@ class SlowIA extends ArtificialIntelligence(){ // similar to the IdleChaseIA, bu
     turnCount += 1
     turnCount %= 2
     if(monster.state != State.Dead && turnCount !=0){
-      println(monster + " " + monster.pos.x + " " + monster.pos.y)
+      //println(monster + " " + monster.pos.x + " " + monster.pos.y)
       if(game.lineOfSight(monster.pos,game.player.pos)){
         if(abs(monster.pos.x-game.player.pos.x) <= 1 && abs(monster.pos.y-game.player.pos.y)<=1){ 
           monster.state = State.Attacking

@@ -2,27 +2,30 @@ package rogue
 
 import java.awt.{Color,Graphics2D, Graphics}
 
+case class PairBiome(element: Environment, proba: Int){
+}
+
 //a biome is a set of tile and color, used to define how to "paint" the environment
-abstract class Biome(mainColor: String){ 
-  def getMainColor() : String = {
-    return mainColor
+class Biome(elements: List[PairBiome], minsize_arg: Int, maxsize_arg: Int){ 
+  val minsize = minsize_arg
+  val maxsize = maxsize_arg
+  val r = scala.util.Random
+  def getElement(): Environment = {
+    for(i: Int <- 0 to (elements.length-1)){
+      if(r.nextInt(100)<= elements(i).proba){
+        return elements(i).element
+      }
+    }
+    return elements(elements.length-1).element
   }
 }
-object Cave extends Biome("153051000"){ //definition of several simple biomes
-}
 
-object Field extends Biome("000153000"){
-}
-
-object Temple extends Biome("255255153"){
-}
-
-object Neutral extends Biome("000000000"){
-}
-
-class Environment(sprite: Sprite, blocking: Boolean){ //an environment is an element of the landscape: either the ground or a wall ...
+class Environment(sprite: Sprite, blocking: Boolean, tall: Boolean){ //an environment is an element of the landscape: either the ground or a wall ...
   def getBlocking(): Boolean = {
     return blocking 
+  }
+  def getTall(): Boolean = {
+    return tall 
   }
 
   //draws the element's sprite at a given position [pos] 
@@ -77,28 +80,63 @@ class Environment(sprite: Sprite, blocking: Boolean){ //an environment is an ele
   } 
 }
 
+object Neutral extends Biome (List(
+  new PairBiome(  Empty, 100),
+  ), 10 ,15)
+  {
+}
+
+object Lake extends Biome (List(
+  new PairBiome(  Lake1, 50),
+  new PairBiome( Lake2, 100)
+  ), 10 ,13)
+  {
+}
+object Field extends Biome (List(
+  new PairBiome(  Flower, 5),
+  new PairBiome( HighHerb, 15),
+  new PairBiome( Herb, 100)
+  ), 16 ,23)
+  {
+}
+object DirtField extends Biome (List(
+  new PairBiome(  DirtPebble, 35),
+  new PairBiome( Dirt, 100)
+  ), 20 ,27)
+  {
+}
+
+object Lake1 extends Environment( //definitions of the environment parts, here a wall
+  new Sprite(Array[SubSprite](new SubSprite(247,"005036161")), new Color(30,69,227)) , false, false)  {
+}
+object Lake2 extends Environment( //definitions of the environment parts, here a wall
+  new Sprite(Array[SubSprite](new SubSprite(247,"005036161")), new Color(46,88,255)) , false, false)  {
+}
+object HighHerb extends Environment( //definitions of the environment parts, here a wall
+  new Sprite(Array[SubSprite](new SubSprite(244,"017214024")), new Color(0,0,0)) , false, true)  {
+}
+object Herb extends Environment( //definitions of the environment parts, here a wall
+  new Sprite(Array[SubSprite](new SubSprite(231,"017214024")), new Color(0,0,0)) , false, false)  {
+}
+object Dirt extends Environment( //definitions of the environment parts, here a wall
+  new Sprite(Array[SubSprite](new SubSprite(250,"000000000")), new Color(133,81,4)) , false, false)  {
+}
+object DirtPebble extends Environment( //definitions of the environment parts, here a wall
+  new Sprite(Array[SubSprite](new SubSprite(249,"000000000")), new Color(133,81,4)) , false, false)  {
+}
+object Flower extends Environment( //definitions of the environment parts, here a wall
+  new Sprite(Array[SubSprite](new SubSprite(173,"017214024"),
+    new SubSprite(42,"255212059")
+    ),
+    new Color(0,0,0)) , false, false ) {
+}
 
 object Granite extends Environment( //definitions of the environment parts, here a wall
   new Sprite(Array[SubSprite](new SubSprite(0,"255255255")) ,new Color(180,180,180))
-  , true) {
+  , true, true) {
 }
 
 object Empty extends Environment( // and here, several floor types
   new Sprite(Array[SubSprite](new SubSprite(250,"180180180")) ,Color.BLACK)
-  , false) {
-}
-
-object EmptyField extends Environment(
-  new Sprite(Array[SubSprite](new SubSprite(258,Field.getMainColor())) ,Color.BLACK)
-  , false) {
-}
-
-object EmptyCave extends Environment(
-  new Sprite(Array[SubSprite](new SubSprite(176,Cave.getMainColor())) ,Color.BLACK)
-  , false) {
-}
-
-object EmptyTemple extends Environment(
-  new Sprite(Array[SubSprite](new SubSprite(250,Temple.getMainColor())) ,Color.BLACK)
-  , false) {
+  , false, false) {
 }

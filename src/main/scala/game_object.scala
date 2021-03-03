@@ -108,7 +108,7 @@ class GameObject(dim: Dimension) {
         if(x==pos2.x && y==pos2.y){
           return true
         }
-      }while(first_floor.getFloor()(x)(y).getBlocking()==false)
+      }while(first_floor.getFloor()(x)(y).getTall()==false)
       return false
     }else{
       var t = deltaX*2-deltaY
@@ -122,7 +122,7 @@ class GameObject(dim: Dimension) {
         if(x==pos2.x && y==pos2.y){
           return true
         }
-      }while(first_floor.getFloor()(x)(y).getBlocking()==false)
+      }while(first_floor.getFloor()(x)(y).getTall()==false)
       return false
     }
   }

@@ -36,10 +36,10 @@ class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
   }
   def intToBiome(biomeID:Int): Biome = { // a function that helps choosing randomly a biome
         biomeID match{
-        case 0 => return( Neutral )
+        case 0 => return( Lake )
         case 1 => return( Field )
-        case 2 => return ( Temple )
-        case _ => return ( Cave )
+        case 2 => return ( DirtField )
+        case _ => return ( DirtField )
         }
   }
 
@@ -120,34 +120,23 @@ class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
     }
   }
 
-  def pouringRoom(x: Int, y: Int, n: Int, biomeInit: Biome):Int = { //tests the connexity with the bucket pour method, 
+  def pouringRoom(x: Int, y: Int, n: Int):Int = { //tests the connexity with the bucket pour method, 
                                                                     //but also add biomes on the first use, and the room number to the tile
-    var b = biomeInit
     if(floor3(x)(y)!=0 ){
       return 0
     }else{
-      if (biomeMap(x)(y) == Neutral){
         floor3(x)(y) = n
-        if(r.nextInt(100)<1){ //the biome has a small chance to be distinct from the previous, so there is no big rooms with only one biome
-          b = intToBiome(r.nextInt(4))
-        }
-
-        biomeMap(x)(y) = b
-        return 1 + pouringRoom(x+1,y,n,b)+ pouringRoom(x-1,y,n,b) + pouringRoom(x,y+1,n,b) + pouringRoom(x,y-1,n,b) //counts the number of connected tiles
-      }else{
-        floor3(x)(y) = n
-        return 1 + pouringRoom(x+1,y,n,b)+ pouringRoom(x-1,y,n,b) + pouringRoom(x,y+1,n,b) + pouringRoom(x,y-1,n,b) 
-      }
+        return 1 + pouringRoom(x+1,y,n)+ pouringRoom(x-1,y,n) + pouringRoom(x,y+1,n) + pouringRoom(x,y-1,n) 
     }  
   }
 
-  def getRooms(free: Int, room_number: Int, biome: Biome):Boolean = {
+  def getRooms(free: Int, room_number: Int):Boolean = {
     var i = 1
     var stop = false
     while(i <= (dim.width-2) && !stop ){
       var j = 1
       while(j <= (dim.height-2)  && !stop){ 
-        val pour_value = pouringRoom(i,j,room_number,biome) //i a tile is connected to every other tiles, the floor is connected
+        val pour_value = pouringRoom(i,j,room_number) //i a tile is connected to every other tiles, the floor is connected
         if(pour_value!=free && pour_value!=0){ //leave the loop early if the floor is connected
           stop = true
         }
@@ -163,7 +152,6 @@ class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
         floor3(x)(y) = if (floor(x)(y)==Granite) 1 else 0 // initialization of the floor scheme in [floor3]
       }
     }
-    var biome: Biome = intToBiome(r.nextInt(4)) //the first biome is random
     var free = 0
     for(x <- 0 to (dim.width-1) ){
       for(y <- 0 to (dim.height-1) ){ 
@@ -173,9 +161,8 @@ class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
       }
     }
     var n = 1
-    while(!getRooms(free,n,biome)){ //if every tile has not been found yet, looks for new rooms
+    while(!getRooms(free,n)){ //if every tile has not been found yet, looks for new rooms
       n += 1 //number assiociated with the room
-      biome = intToBiome(r.nextInt(4))
       free = 0
       for(x <- 0 to (dim.width-1) ){
         for(y <- 0 to (dim.height-1) ){ 
@@ -231,28 +218,28 @@ class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
     if(alongX == true){ //replace the walls with empty tiles
       if(tx1 <= tx2){
         for(i <- tx1 to tx2){
-          floor(i)(ty1) = EmptyTemple
-          biomeMap(i)(ty1) = Temple
+          floor(i)(ty1) = Empty
+          //biomeMap(i)(ty1) = Temple
           floor3(i)(ty1) = 0
         }
       }else{
         for(i <- tx2 to tx1){
-          floor(i)(ty1) = EmptyTemple
-          biomeMap(i)(ty1) = Temple
+          floor(i)(ty1) = Empty
+          //biomeMap(i)(ty1) = Temple
           floor3(i)(ty1) = 0
         }
       }
     }else{
       if(ty1 <= ty2){
         for(j <- ty1 to ty2){
-          floor(tx1)(j) = EmptyTemple
-          biomeMap(tx1)(j) = Temple
+          floor(tx1)(j) = Empty
+          //biomeMap(tx1)(j) = Temple
           floor3(tx1)(j) = 0
         }
       }else{
         for(j <- ty2 to ty1){
-          floor(tx1)(j) = EmptyTemple
-          biomeMap(tx1)(j) = Temple
+          floor(tx1)(j) = Empty
+          //biomeMap(tx1)(j) = Temple
           floor3(tx1)(j) = 0
         }
       }
@@ -269,18 +256,49 @@ class MapAutomata(dim_arg: Dimension) extends Map(dim_arg){
     return room_count
   }
 
+  def pouringBiome(x: Int, y: Int, n: Int, biome: Biome, buffer: Array[Array[Int]]) { //tests the connexity with the bucket pour method, 
+                                                                    //but also add biomes on the first use, and the room number to the tile
+    //println(n)
+    if( floor(x)(y).getBlocking() || n<=0 || buffer(x)(y) != 0 ){
+      return 
+    }else{
+      biomeMap(x)(y) = biome
+      buffer(x)(y) = 1
+      pouringBiome(x+1,y,n-1, biome, buffer)
+      pouringBiome(x-1,y,n-1, biome, buffer)
+      pouringBiome(x,y+1,n-1, biome, buffer)
+      pouringBiome(x,y-1,n-1, biome, buffer) 
+    }  
+  }
+
   
   def applyBiomes(){ //replaces ground tiles with a new biome-specific ground tile
+    val r = scala.util.Random
+    val n_biomes = r.nextInt(4) + 6
+    println("Biomes picked " + n_biomes)
+    for( i <- 1 to n_biomes){
+      println("Treating " + i)
+      val picked_biome = intToBiome(r.nextInt(3))
+      val picked_size = picked_biome.minsize + r.nextInt(picked_biome.maxsize-picked_biome.minsize)
+      var buffer = Array.ofDim[Int](dim.width,dim.height)
+      var x = r.nextInt(dim.width)
+      var y = r.nextInt(dim.height)
+      while(floor(x)(y).getBlocking()){
+        //println(floor(x)(y) + " "+ i)
+        x = r.nextInt(dim.width)
+        y = r.nextInt(dim.height)
+      }
+      
+      println("Picked size " + picked_size)
+      println("Picked biome " + picked_biome)
+      pouringBiome(x,y,picked_size, picked_biome, buffer)
+      println("Treated " + i)
+      
+    }
     for (x: Int <- 0 to (dim.width-1)){
       for (y: Int <- 0 to (dim.height-1)){
-        if (floor(x)(y) == Empty){
-          floor(x)(y) = biomeMap(x)(y) match{
-            case Field => EmptyField
-            case Cave => EmptyCave
-            case Neutral => Empty
-            case Temple => EmptyTemple
-          }
-        }
+        if(!floor(x)(y).getBlocking())
+          floor(x)(y) = biomeMap(x)(y).getElement()
       }
     }
   }

@@ -167,10 +167,12 @@ object MainLoopObject{ //object containing the main loop that runs the game
                 panel.repaint()
               }
               case None => { //toward an empty tile
-                game.player.pos.x = game.mouse_dir.x
-                game.player.pos.y = game.mouse_dir.y
-                game.processDecisions()
-                panel.repaint()
+                if(game.mouse_dir != null){
+                  game.player.pos.x = game.mouse_dir.x
+                  game.player.pos.y = game.mouse_dir.y
+                  game.processDecisions()
+                  panel.repaint()
+                }
               }
   
               val dir = getDirFromAngle(get_angle(clicked_x,clicked_y,game)) // if the player has not clicked on an adjacent tile, considers the tile in the direction of the mouse

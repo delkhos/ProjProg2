@@ -8,6 +8,10 @@ class Position(arg_x:Int , arg_y: Int){ // definition of the position object, th
   def translate(dx: Int, dy: Int): Position = {
     return new Position(x+dx,y+dy)
   }
+  
+  def adjacent(pos:Position): Boolean = {
+    return (scala.math.abs(x-pos.x)<=1 && scala.math.abs(y-pos.y) <=1)
+  }
 
   // override the "=" function to easily compare two positions
   override def equals(that: Any): Boolean =

@@ -13,6 +13,7 @@ class GameObject(dim: Dimension) {
   var first_floor = new MapAutomata(dim)
   var player = new Player(Origin, new Sprite( Array[SubSprite](new SubSprite(256,"230051153")) , new Color(1.0f,1.0f,1.0f,0.0f)), true, 20, 60, 10,"the Hero","000000255")
   var monsters: List[Monster] = List() 
+  var turn: Int = 0
   var items: List[Item] = List()
   var mouse_dir: Position = null
   var attack_dir: Position = null
@@ -20,7 +21,7 @@ class GameObject(dim: Dimension) {
   var win = false
   var lose = false
   var trophy = false
-
+  
   // for now we palce the hero, and 4 monsters
   // as well as twenty items.
   // All ennemies must be vanquished to win the game.
@@ -31,6 +32,9 @@ class GameObject(dim: Dimension) {
   placeMonster(new Bat(Origin))
   for(i <- 0 to 20){
     placeItem(new HealingGoo(Origin))
+  }
+  for(i<-0 to 20){
+    placeItem(new UrchinStrike(Origin))
   }
 
   // This function is used to place the player at a random spot
@@ -223,10 +227,19 @@ class GameObject(dim: Dimension) {
   // It will move items from the ground the hero's inventory if it is not already full
   // and if the hero is "walking" on an item
   def processDecisions(){
+    turn += 1
     items.foreach((itm: Item)=> {
       itm.pickUp(this)
     }
     )
+
+    player.status = player.status.filter( s => {s.duration !=0}) 
+    player.status.foreach(s => {
+      s.effect(this) 
+      s.duration-=1
+    }
+    )
+    
     // we remove items that are not on the ground anymore
     // from the list of items
     items = items.filter( itm =>{ 

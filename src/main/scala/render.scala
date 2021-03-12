@@ -129,6 +129,7 @@ class Renderer {
     }
     paintCharacter(g, 217, new Position(matrix_dim.width-ui_dim.width-1, matrix_dim.height-ui_dim.height-1), Color.BLACK, "000050200", tileset_handler.getSize() , DOrigin)
     // draw hps
+    
     drawString(g,new Position( matrix_dim.width-ui_dim.width, 0) , Color.BLACK, "255255255", tileset_handler.getSize(),"HP:"+game.player.health+"/"+game.player.max_health)    
     // draw log title
     drawString(g,new Position(0, matrix_dim.height-ui_dim.height) , Color.BLACK, "255255255", tileset_handler.getSize(),"Last events : " + (25).toChar)    
@@ -180,6 +181,7 @@ class Renderer {
     game.items.foreach( (itm: Item) => itm.draw(g, current_size, tileset_handler,dpos,game) )
     //draw monsters 
     game.monsters.foreach( (m: Monster) => m.draw(g, current_size, tileset_handler,dpos, game) )
+    // game.monsters.foreach( (m: Monster) => m.own_ia.path.foreach(pos => paintCharacter(g,4,pos,new Color(1.0f,1.0f,1.0f,0.0f),"255000000",tileset_handler.getSize(),DOrigin)))
     game.getPlayer().draw(g,current_size, tileset_handler, dpos)
     //draw the direction pointer if the mouse is on the game screen
     if(game.mouse_dir != null){

@@ -3,6 +3,7 @@ package rogue
 import scala.math.abs
 
 abstract class ArtificialIntelligence(){ // definition of the core elements to rule the behavior of the PNJs
+  var path = List[Position]()
   def processDecision(game: GameObject, monster: Monster){
   }
 }
@@ -56,7 +57,7 @@ class IdleChaseIA extends ArtificialIntelligence(){
           monster.pos = monster.pos.translate(delta._1, delta._2) // else it moves
         }
       }else if(monster.state==State.Chasing){
-        var path = game.a_star_path(monster.pos, lastPlayerSeenPosition) //follow the player, using an A* algorithm, see game_object file
+        path = game.a_star_path(monster.pos, lastPlayerSeenPosition) //follow the player, using an A* algorithm, see game_object file
         monster.pos = path(0)
       }else if(monster.state==State.Attacking){ //the monster attack the player and then turn into a non-attacking state, to avoid unwanted attack with turn-based mechanics
         monster.attack(game.player)
@@ -135,7 +136,7 @@ class FastIA extends ArtificialIntelligence(){ //similar to the IdleChaseIA but 
           monster.pos = monster.pos.translate(delta._1, delta._2)
         }
       }else if(monster.state==State.Chasing){
-        var path = game.a_star_path(monster.pos, lastPlayerSeenPosition)
+        path = game.a_star_path(monster.pos, lastPlayerSeenPosition)
         monster.pos = path(0)
       }else if(monster.state==State.Attacking){
         monster.attack(game.player)
@@ -191,7 +192,7 @@ class SlowIA extends ArtificialIntelligence(){ // similar to the IdleChaseIA, bu
           monster.pos = monster.pos.translate(delta._1, delta._2)
         }
       }else if(monster.state==State.Chasing){
-        var path = game.a_star_path(monster.pos, lastPlayerSeenPosition)
+        path = game.a_star_path(monster.pos, lastPlayerSeenPosition)
         monster.pos = path(0)
       }else if(monster.state==State.Attacking){
         monster.attack(game.player)

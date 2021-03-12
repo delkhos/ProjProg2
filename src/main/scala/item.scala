@@ -23,7 +23,7 @@ abstract class Item (arg_pos: Position, sprite: Sprite, arg_equipable: Boolean, 
 
 class HealingGoo (pos: Position) extends Item (
   pos,
-  new Sprite( Array[SubSprite](new SubSprite(15,"240060060")),new Color(0.0f,0.0f,0.0f,0.0f)),
+  new Sprite( Array[SubSprite](new SubSprite(297,"000120000")),new Color(0.0f,0.0f,0.0f,0.0f)),
   false,
   "healing goo",
   "220030000"){
@@ -38,6 +38,22 @@ class HealingGoo (pos: Position) extends Item (
   }
 
 }
+
+class UrchinStrike (pos:Position) extends Item (
+  pos,
+  new Sprite( Array[SubSprite](new SubSprite(15,"240060060")),new Color(0.0f,0.0f,0.0f,0.0f)),
+  false,
+  "urchin",
+  "220030000"){
+    override def use(game: GameObject){
+      game.player.status = new UrchinStance(new Sprite( Array[SubSprite](new SubSprite(15,"240060060")), new Color(0.0f,0.0f,0.0f,0.0f)),3) :: game.player.status
+      game.player.inventory.contents(pos_in_inventory) = null
+
+
+    }
+
+  }
+
 
 class Trophy (pos: Position) extends Item (
   pos,
